@@ -106,10 +106,11 @@ classdef ModelSkill < muiModelUI
             
             % submenu for Import Data (if these are changed need to edit
             % loadMenuOptions to be match)
-            menu.Setup(2).List = {'Grid/Mesh Data','Regrid Data','Timeseries'};
+            menu.Setup(2).List = {'Grid/Mesh Data','Regrid Data',...
+                                            'Subgrid Data','Timeseries'};
             menu.Setup(2).Callback = [{'gcbo;'},...
                 {@(src,evt)MS_GridData.reGridData(obj,src,evt)},...
-                                                            {'gcbo;'}];
+                {@(src,evt)MS_GridData.subGridData(obj,src,evt)},{'gcbo;'}];
             % submenu for Timeseries Data 
             nitems = 2;
             for j=1:nitems  %add standard submenu to all import menu items
@@ -159,7 +160,7 @@ classdef ModelSkill < muiModelUI
             % positions:  top left [0.95,0.48];    top right [0.95,0.97]
             %         bottom left [0.45, 0.48]; bottom rigth [0.45,0.97]
             props = {...                                    
-                'MS_RunParams','Inputs',[0.95,0.52],{200,60},'Input parameters:'};
+                'MS_RunParams','Inputs',[0.95,0.70],{200,160},'Input parameters:'};
         end    
  %%
         function setTabAction(~,src,cobj)

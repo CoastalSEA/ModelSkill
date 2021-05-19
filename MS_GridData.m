@@ -37,7 +37,7 @@ classdef MS_GridData
             obj = MS_GridData; %initialise instance of class
             
             [fname,path,nfiles] = getfiles('MultiSelect','on',...
-                'FileType','*.txt;*.csv','PromptText','Select file(s):');
+                'FileType','*.txt;*.grd;*.csv','PromptText','Select file(s):');
             if ~iscell(fname)
                 fname = {fname};   %single select returns char
             end
@@ -61,9 +61,9 @@ classdef MS_GridData
             %now load each file selected
             nhead = 1; %number of header lines in file   
             for i=1:nfiles
-               [data,~,filename{i,1}] = readInputData(obj,[path,fname{i}],nhead);  
+               [data,~,filename{i,1}] = readInputData(obj,[path,fname{i}],nhead);   %#ok<AGROW>
                if isempty(data), continue; end 
-               griddata(i,:,:) = formatGridData(obj,data,isflip);
+               griddata(i,:,:) = formatGridData(obj,data,isflip); %#ok<AGROW>
             end
 
             %load the results into a dstable  
@@ -149,11 +149,11 @@ classdef MS_GridData
                 yi = Y(:,1);
             end   
             %
+            Nx = length(xi); Ny = length(yi);
             for i=1:height(dst)
                 z =squeeze(dst.DataTable.Z(i,:,:));
-                Z = griddata(x,y,z',X,Y); %#ok<GRIDD>
-                Nx = length(xi); Ny = length(yi);
-                impdata(i,:,:) = reshape(Z',1,Nx,Ny);                
+                Z = griddata(x,y,z',X,Y); %#ok<GRIDD>                
+                impdata(i,:,:) = reshape(Z',1,Nx,Ny);                 %#ok<AGROW>
             end
             newdst = copy(dst);
             newdst.DataTable.Z = impdata;
@@ -164,7 +164,90 @@ classdef MS_GridData
             newdst.Source = {metatxt};
             %setDataRecord classobj, muiCatalogue obj, dataset, classtype
             setDataSetRecord(cobj,muicat,newdst,'data');     
-        end        
+            mobj.DrawMap;
+        end    
+%%
+        function subGridData(mobj,~,~)
+            %interactively define a subgrid and save grid as a new case
+            muicat = mobj.Cases;
+            %prompt user to select an existing form model to modify
+            promptxt = 'Select a Model Grid to Regrid?';
+            [caserec,ok] = selectRecord(muicat,'PromptText',promptxt,...
+                        'CaseClass',{'MS_GridData'},'ListSize',[200,200]);
+            if ok<1, return; end
+            cobj = getCase(muicat,caserec);
+            dst = cobj.Data.Dataset;
+            x = dst.Dimensions.X;
+            y = dst.Dimensions.Y;
+            z = squeeze(dst.Z(1,:,:)); %first row/time
+            casedesc = dst.Description;
+            subdomain0 = [min(x),max(x),min(y),max(y)];
+
+            %create subgrid selection plot
+
+            figtitle = sprintf('Subgrid selection');
+            promptxt = 'Accept subgrid definition';
+            tag = 'PlotFig'; %used for collective deletes of a group
+            butnames = {'Yes','No'};
+            position = [0.2,0.4,0.4,0.4];
+            [h_plt,h_but] = acceptfigure(figtitle,promptxt,tag,butnames,position);
+            ax = plotGrid(cobj,h_plt,x,y,z');
+            [~,~,~,ixo,iyo] = getsubgrid(x,y,z',subdomain0);
+            hold on
+            plot(ax,x(ixo),y(iyo),'--r','LineWidth',0.8)
+            hold off
+            ok = 0; subdomain = subdomain0;
+            while ok<1
+                waitfor(h_but,'Tag');
+                if ~ishandle(h_but) %this handles the user deleting figure window
+                    ok = 1;          %continue using default subdomain
+                elseif strcmp(h_but.Tag,'No')
+                    %Get user to redfine subgrid
+                    promptxt = {'Min X','Max X','Min Y','Max Y'};
+                    title = 'Define subgrid';
+                    defaults = string(subdomain');
+                    asub = inputdlg(promptxt,title,1,defaults);
+                    subdomain = cellfun(@str2double,asub)';
+                    if any(subdomain(1,[1,3])<subdomain0(1,[1,3])) || ...
+                                any(subdomain(1,[2,4])>subdomain0(1,[2,4]))
+                        warndlg('Selection out of bounds. Please make a new seslection')
+                        subdomain = subdomain0;
+                    end
+                    [~,~,~,ixo,iyo] = getsubgrid(x,y,z',subdomain);
+%                ax = findobj(h_plt,'Type','axes'); %in case user clicks on something else
+                    h_sd = findobj(ax,'Type','line');  %remove existing subdomain rectangle
+                    delete(h_sd);
+                    hold on
+                    plot(ax,x(ixo),y(iyo),'--r','LineWidth',0.8) %updated subdomain bounding rectangle
+                    hold off
+                    h_but.Tag = '';
+                else
+                    ok = 1;
+
+                end
+            end
+            %extract selected grid
+            [xo,yo,~,ixo,iyo] = getsubgrid(x,y,z',subdomain);
+            Nx = length(xo); Ny = length(yo);
+            for i=1:height(dst)
+                zi =squeeze(dst.DataTable.Z(i,:,:))';
+                zo = zi(min(iyo):max(iyo),min(ixo):max(ixo));
+                impdata(i,:,:) = reshape(zo',1,Nx,Ny); %#ok<AGROW>
+            end
+
+            %extract defined subgrid for each row in table
+            newdst = copy(dst);
+            newdst.DataTable.Z = impdata;
+            newdst.Dimensions.X = xo;
+            newdst.Dimensions.Y = yo;
+
+            %assign metadata about data
+            newdst.Source = sprintf('Subgrid of %s using subdomain: %s',...
+                casedesc,defaults);
+            %setDataRecord classobj, muiCatalogue obj, dataset, classtype
+            setDataSetRecord(cobj,muicat,newdst,'data');
+            mobj.DrawMap;
+        end
     end   
 %%
     methods
@@ -251,7 +334,7 @@ classdef MS_GridData
 
             xi = dst.Dimensions.X;
             yi = dst.Dimensions.Y;
-            zi = squeeze(dst.DataTable.Z(irec,:,:))';
+            zi = squeeze(dst.Z(irec,:,:))';
             if isempty(xi), return; end
             
             %clean up tab          
@@ -393,7 +476,23 @@ classdef MS_GridData
             data = cell2mat(data);
             %
             fclose(fid);
-        end       
+        end     
+        
+%%
+        function ax = plotGrid(~,hf,x,y,z)
+            %create plot of perturpation from initial surface
+%     hf = figure('Name','Cusp properties', ...
+%                 'Units','normalized', ...
+%                 'Resize','on','HandleVisibility','on', ...
+%                 'Tag','PlotFig');
+            ax = axes(hf);
+            pcolor(ax,x,y,z)
+            shading interp
+            colormap('parula')
+            colorbar
+            xlabel('Length (m)'); 
+            ylabel('Width (m)')
+        end
 %%        
         function dsp = setDSproperties(~)
             %define the metadata properties for the demo data set

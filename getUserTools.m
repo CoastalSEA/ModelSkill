@@ -374,9 +374,10 @@ function hf = getCuspPlot(mobj,caseid)
     %retrieve description from Results Case
     %now examin cusp spacing
     SD = getCuspSpacing(mobj,grid,zdiff,casedesc);
+    if isempty(SD), return; end
     %get the volume change relative to the zero horizontal surface
     [posvol,negvol] = getVolumeChange(grid,zdiff);
-    %create plot    
+    %create plot of perturbation from initial surface     
     hf = cuspPlot(X,Y,zdiff);
     ax = findobj(hf,'Type','axes');
     hold on
@@ -385,24 +386,25 @@ function hf = getCuspPlot(mobj,caseid)
     m1 = sprintf('Perturbation from initial plane for %s',casedesc);
     m2 = sprintf('Positive volume change = %.1f; Negative volume change = %.1f',...
                             posvol,negvol);
-    titletxt = sprintf('%s\n%s\n',m1,m2);
+    m3 = 'Dashed lines: subdomain used to estimate amplitude and wavelength';                    
+    titletxt = sprintf('%s\n%s\n%s',m1,m2,m3);
     title(titletxt)    
 end
 %%
 function SD = getCuspSpacing(mobj,grid,zdiff,casedesc)
     %compute the cusp spacing and amplitude
     %extract Skill parameters from MS_RunParameters class
-    h_runparams = getClassHandle(mobj,'MS_RunParams');
-    if isa(mobj.(h_runparams),'MS_RunParams')
-        subdomain = mobj.(h_runparams).skillsubdomain;
-        SD = getSubDomain(grid.x,grid.y,subdomain);
+    SD = [];
+    msgtxt = 'Averaging window has not been defined';
+    if isfield(mobj.Inputs,'MS_RunParams')
+        subdomain = mobj.Inputs.MS_RunParams.skillsubdomain;
+        if length(subdomain)~=4
+            warndlg(msgtxt); return;
+        end        
     else
-        warndlg('Averaging window has not been defined');
-        return
+        warndlg(msgtxt);  return
     end  
-    zsub = zdiff(min(SD.y):max(SD.y),min(SD.x):max(SD.x));
-    xsub = grid.x(min(SD.x):max(SD.x));
-    ysub = grid.y(min(SD.y):max(SD.y));
+    [xsub,ysub,zsub,SD.x,SD.y] = getsubgrid(grid.x,grid.y,zdiff,subdomain);
     
     %compute stats for each row over the ysub domain
     pamp = zeros(size(ysub)); wavelength = pamp; stdpamp = pamp;
@@ -444,7 +446,8 @@ function SD = getCuspSpacing(mobj,grid,zdiff,casedesc)
     m2 = sprintf('Wavelength: mean=%.1f; mode=%0.1f; min=%0.1f.',...
                     mean(wavelength), mode(wavelength),min(wavelength));
     m3 = sprintf('Positive amplitude = %.2f; Negative amplitude = %.2f',mean(pamp),mean(namp));
-    titletxt = sprintf('%s\n%s\n%s\n',m1,m2,m3);
+    m4 = 'Lines are +ve/-ve amplitude and dash-dot is wavelength';
+    titletxt = sprintf('%s\n%s\n%s\n%s',m1,m2,m3,m4);
     title(titletxt)
 end
 %%
@@ -473,22 +476,8 @@ function [posvol,negvol] = getVolumeChange(grid,zdiff)
     negvol = trapz(grid.x,negvy);
 end
 %%
-function sd = getSubDomain(x,y,subdomain)
-    %find the subdomain in integer grid indices defined by x,y range
-    %subdomain defined as [x0,xN,y0,yN];
-    if isempty(subdomain)
-        subdomain = [min(x),max(x),min(y),max(y)];
-    end
-    ix0 = find(x<=subdomain(1),1,'last');
-    ixN = find(x>=subdomain(2),1,'first');
-    iy0 = find(y<=subdomain(3),1,'last');
-    iyN = find(y>=subdomain(4),1,'first');
-    sd.x = [ix0,ix0,ixN,ixN,ix0];
-    sd.y = [iyN,iy0,iy0,iyN,iyN];
-end
-%%
 function hf = cuspPlot(X,Y,Z)
-    %create plot
+    %create plot of perturpation from initial surface
     hf = figure('Name','Cusp properties', ...
                 'Units','normalized', ...
                 'Resize','on','HandleVisibility','on', ...
@@ -505,8 +494,8 @@ end
 %%
 function [pks,idx] = getRowPeaks(var)
     %find alternate peaks and troughs and return peaks and index of peak
-    [plocs,~]=peakseek(var,1,0.01); %(variable, min distance, min amplitude)
-    [nlocs,~]=peakseek(-var,1,0.01);
+    [plocs,~] = peakseek(var,1,0.01); %(variable, min distance, min amplitude)
+    [nlocs,~] = peakseek(-var,1,0.01);
     %create array of peak locations and whether they are +ve or -ve
     locs = sortrows([[plocs,nlocs]',[true(size(plocs)),false(size(nlocs))]']);
     %find run lengths (ie first occurrence of several +ve/-ve peaks)
