@@ -59,20 +59,23 @@ function network_count(bathy,options,casevars)
     jj=isnan(bathy); %bathymetry uses NaN values to represent land
     Cs_bis(jj) = NaN;
     Cs_bis = reshape(Cs_bis,x_Co,y_Co);
-%     figure
-%     pcolor(Cs_bis)
-%     shading flat; 
-%     colorbar; 
-%     view([0 -90])
-%     max_Co=max(max(Co));
-%     min_Co=min(min(Co));
-%     set(gca,'clim',[min_Co,max_Co])
+    figure
+    pcolor(Cs_bis)
+    shading flat; 
+    colorbar; 
+    view([0 -90])
+    max_Co=max(max(Co));
+    min_Co=min(min(Co));
+    set(gca,'clim',[min_Co,max_Co])
  
-    above_high_tide=bathy>casevars.HW; %grid poiints above the high water level
+    above_high_tide=bathy>casevars.HW; %grid points above the high water level
     bathy_channels = get_channels(Cs_bis,above_high_tide);
     
     results = get_number_channels(bathy_channels,casevars);
-    
+    if isempty(results)
+        warndlg(sprintf('No results to plot.\nTry changing parameters used for channel counting'));
+        return; 
+    end
     plot_network_figures(bathy,bathy_channels,results,casevars.desc);
 end
 %%
@@ -124,17 +127,13 @@ end
 %%
 function results = get_number_channels(bathy_channels,casevars)
     %count the number of channels located at a specific distance from the coastal inlet
+    results = [];
     cv = casevars;
     % CREATING CIRCLES AND COUNTING CHANNELS
-    [y_len, x_len] = size(bathy_channels);    
-    if cv.X_centre==0
-        cv.X_centre = round(x_len/2);
+    if cv.X_centre==0 || cv.Y_centre==0
+       [cv,max_rad] = getXYcentre(bathy_channels,cv);
+       if isempty(max_rad), return; end
     end
-    %
-    if cv.Y_centre==0
-        cv.Y_centre = round(y_len/2);
-    end
-    max_rad = min(cv.X_centre,x_len-cv.X_centre)-1;
     
     where_i=0;
     for radius = cv.min_rad:cv.rad_int:max_rad
@@ -212,19 +211,79 @@ function results = get_number_channels(bathy_channels,casevars)
     figure
     pcolor(bathy_channels)
     shading flat
-    colorbar
+%     colorbar
     view([0 -90])
     set(gca,'clim',[-1 1])    
+end
+%%
+function [cv,mxr] = getXYcentre(bathy_channels,cv)
+    %Allow user to interactively adjust centre point
+    [y_len, x_len] = size(bathy_channels);    
+    if cv.X_centre==0
+        cv.X_centre = round(x_len/2);
+    end
+    %
+    if cv.Y_centre==0
+        cv.Y_centre = round(y_len/2);
+    end
+    %plot base figure
+    figtitle = sprintf('Centre selection');
+    promptxt = 'Accept centre point definition';
+    tag = 'PlotFig'; %used for collective deletes of a group
+    butnames = {'Yes','No'};
+    position = [0.2,0.4,0.4,0.4];
+    [h_plt,h_but] = acceptfigure(figtitle,promptxt,tag,butnames,position);
+    ax = axes(h_plt);
+    pcolor(ax,bathy_channels)
+    view([0 -90])
+    shading flat
+    hold on
+    plot(ax,cv.X_centre,cv.Y_centre,'+r','MarkerSize',12)
+    plot(ax,cv.X_centre,cv.Y_centre,'or','MarkerSize',10)
+    xlabel('X-axis indices')
+    ylabel('Y-axis indices')
+    hold off
+    ok = 0;
+    while ok<1
+        waitfor(h_but,'Tag');
+        if ~ishandle(h_but) %this handles the user deleting figure window
+            ok = 1;         %continue using default subdomain
+        elseif strcmp(h_but.Tag,'No')
+            %Get user to redfine subgrid
+            promptxt = {'X centre','Y centre'};
+            title = 'Define centre';
+            defaults = string([cv.X_centre,cv.Y_centre]);
+            asub = inputdlg(promptxt,title,1,defaults);
+            newvals = cellfun(@str2double,asub)';
+            cv.X_centre = newvals(1);
+            cv.Y_centre = newvals(2);
+            h_sd = findobj(ax,'Type','line');  %remove existing subdomain rectangle
+            delete(h_sd);
+            hold on
+            plot(ax,cv.X_centre,cv.Y_centre,'+r','MarkerSize',12)
+            plot(ax,cv.X_centre,cv.Y_centre,'or','MarkerSize',10)
+            hold off
+            h_but.Tag = '';
+        else  %user accepted centre point - check not to near boundary
+            my_rad = y_len-cv.Y_centre-1;
+            mx_rad = min(cv.X_centre,x_len-cv.X_centre)-1;
+            mxr = min(mx_rad,my_rad); 
+            if mxr<cv.min_rad
+                warndlg('Selected postion too close to edge to accept minimum radius')
+                mxr = [];
+                h_but.Tag = '';
+            end
+            ok = 1;
+        end     
+    end    
 end
 %%
 function plot_network_figures(bathy_0,channels,results,casedesc)
     %generate the various plots to illustrate the network extracted and
     %resultant network properties
-    figure('Name','Network properties', ...
-                'Units','normalized', ...
-                'Resize','on','HandleVisibility','on', ...
-                'Tag','PlotFig'); 
-            
+    figure('Name','Network properties','Units','normalized', ...                
+                'Resize','on','HandleVisibility','on','Tag','PlotFig'); 
+
     s1 = subplot(2,2,1);
     pcolor(bathy_0)
     shading flat; 
@@ -322,7 +381,8 @@ function Jd = geonet_diffusion(J,method,N,K,dt,sigma2)
        % gaussian filter with kernel 5x5 (Catte et al)
        if (sigma2>0) 
           Jo = J;   % save J original
-          J=gauss(J,5,sigma2);  
+%           J=gauss(J,5,sigma2);  
+          J = imgaussfilt(J,sigma2); %requires Matlab Image Processing Toolbox
        end
 
         % calculate gradient in all directions (N,S,E,W)

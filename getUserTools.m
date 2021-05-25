@@ -110,7 +110,6 @@ function [options,casevars] = getNetworkVars(casedesc)
     %   dt - time increment (0 < dt <= 0.25, default 0.2)
     %   sigma2 - if present, calculates gradients of diffusion coefficient
     %          convolved with gaussian of var sigma2 (Catte et al [CLMC92])J
-    %   del - grid spacing (m)
     %
     % casevars - struct to define the parameters used for channel counting
     %   X_centre -grid index to centre of circle along x-axis
@@ -140,7 +139,7 @@ function [options,casevars] = getNetworkVars(casedesc)
     fields = fieldnames(options);
     options = cell2struct(opts,fields);
 
-    % assign values to casevals structure for use in channel counting
+    % assign values to casevars structure for use in channel counting
     casevars.X_centre = '0';
     casevars.Y_centre = '0';
     casevars.min_rad = '12';

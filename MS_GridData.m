@@ -175,57 +175,16 @@ classdef MS_GridData
             [caserec,ok] = selectRecord(muicat,'PromptText',promptxt,...
                         'CaseClass',{'MS_GridData'},'ListSize',[200,200]);
             if ok<1, return; end
-            cobj = getCase(muicat,caserec);
-            dst = cobj.Data.Dataset;
+            obj = getCase(muicat,caserec);
+            dst = obj.Data.Dataset;
             x = dst.Dimensions.X;
             y = dst.Dimensions.Y;
             z = squeeze(dst.Z(1,:,:)); %first row/time
             casedesc = dst.Description;
-            subdomain0 = [min(x),max(x),min(y),max(y)];
+            
 
             %create subgrid selection plot
-
-            figtitle = sprintf('Subgrid selection');
-            promptxt = 'Accept subgrid definition';
-            tag = 'PlotFig'; %used for collective deletes of a group
-            butnames = {'Yes','No'};
-            position = [0.2,0.4,0.4,0.4];
-            [h_plt,h_but] = acceptfigure(figtitle,promptxt,tag,butnames,position);
-            ax = plotGrid(cobj,h_plt,x,y,z');
-            [~,~,~,ixo,iyo] = getsubgrid(x,y,z',subdomain0);
-            hold on
-            plot(ax,x(ixo),y(iyo),'--r','LineWidth',0.8)
-            hold off
-            ok = 0; subdomain = subdomain0;
-            while ok<1
-                waitfor(h_but,'Tag');
-                if ~ishandle(h_but) %this handles the user deleting figure window
-                    ok = 1;          %continue using default subdomain
-                elseif strcmp(h_but.Tag,'No')
-                    %Get user to redfine subgrid
-                    promptxt = {'Min X','Max X','Min Y','Max Y'};
-                    title = 'Define subgrid';
-                    defaults = string(subdomain');
-                    asub = inputdlg(promptxt,title,1,defaults);
-                    subdomain = cellfun(@str2double,asub)';
-                    if any(subdomain(1,[1,3])<subdomain0(1,[1,3])) || ...
-                                any(subdomain(1,[2,4])>subdomain0(1,[2,4]))
-                        warndlg('Selection out of bounds. Please make a new seslection')
-                        subdomain = subdomain0;
-                    end
-                    [~,~,~,ixo,iyo] = getsubgrid(x,y,z',subdomain);
-%                ax = findobj(h_plt,'Type','axes'); %in case user clicks on something else
-                    h_sd = findobj(ax,'Type','line');  %remove existing subdomain rectangle
-                    delete(h_sd);
-                    hold on
-                    plot(ax,x(ixo),y(iyo),'--r','LineWidth',0.8) %updated subdomain bounding rectangle
-                    hold off
-                    h_but.Tag = '';
-                else
-                    ok = 1;
-
-                end
-            end
+            [subdomain,defaults] = getSubDomain(obj,x,y,z);
             %extract selected grid
             [xo,yo,~,ixo,iyo] = getsubgrid(x,y,z',subdomain);
             Nx = length(xo); Ny = length(yo);
@@ -245,7 +204,7 @@ classdef MS_GridData
             newdst.Source = sprintf('Subgrid of %s using subdomain: %s',...
                 casedesc,defaults);
             %setDataRecord classobj, muiCatalogue obj, dataset, classtype
-            setDataSetRecord(cobj,muicat,newdst,'data');
+            setDataSetRecord(obj,muicat,newdst,'data');
             mobj.DrawMap;
         end
     end   
@@ -481,10 +440,6 @@ classdef MS_GridData
 %%
         function ax = plotGrid(~,hf,x,y,z)
             %create plot of perturpation from initial surface
-%     hf = figure('Name','Cusp properties', ...
-%                 'Units','normalized', ...
-%                 'Resize','on','HandleVisibility','on', ...
-%                 'Tag','PlotFig');
             ax = axes(hf);
             pcolor(ax,x,y,z)
             shading interp
@@ -492,6 +447,50 @@ classdef MS_GridData
             colorbar
             xlabel('Length (m)'); 
             ylabel('Width (m)')
+        end
+%%
+        function [subdomain,defaults] = getSubDomain(obj,x,y,z)
+            %Allow the user to interactively adjust the grid domain to sample
+            subdomain0 = [min(x),max(x),min(y),max(y)];
+            figtitle = sprintf('Subgrid selection');
+            promptxt = 'Accept subgrid definition';
+            tag = 'PlotFig'; %used for collective deletes of a group
+            butnames = {'Yes','No'};
+            position = [0.2,0.4,0.4,0.4];
+            [h_plt,h_but] = acceptfigure(figtitle,promptxt,tag,butnames,position);
+            ax = plotGrid(obj,h_plt,x,y,z');
+            [~,~,~,ixo,iyo] = getsubgrid(x,y,z',subdomain0);
+            hold on
+            plot(ax,x(ixo),y(iyo),'--r','LineWidth',0.8)
+            hold off
+            ok = 0; subdomain = subdomain0;
+            while ok<1
+                waitfor(h_but,'Tag');
+                if ~ishandle(h_but) %this handles the user deleting figure window
+                    ok = 1;         %continue using default subdomain
+                elseif strcmp(h_but.Tag,'No')
+                    %Get user to redfine subgrid
+                    promptxt = {'Min X','Max X','Min Y','Max Y'};
+                    title = 'Define subgrid';
+                    defaults = string(subdomain');
+                    asub = inputdlg(promptxt,title,1,defaults);
+                    subdomain = cellfun(@str2double,asub)';
+                    if any(subdomain(1,[1,3])<subdomain0(1,[1,3])) || ...
+                                any(subdomain(1,[2,4])>subdomain0(1,[2,4]))
+                        warndlg('Selection out of bounds. Please make a new seslection')
+                        subdomain = subdomain0;
+                    end
+                    [~,~,~,ixo,iyo] = getsubgrid(x,y,z',subdomain);
+                    h_sd = findobj(ax,'Type','line');  %remove existing subdomain rectangle
+                    delete(h_sd);
+                    hold on
+                    plot(ax,x(ixo),y(iyo),'--r','LineWidth',0.8) %updated subdomain bounding rectangle
+                    hold off
+                    h_but.Tag = '';
+                else
+                    ok = 1;
+                end
+            end
         end
 %%        
         function dsp = setDSproperties(~)
