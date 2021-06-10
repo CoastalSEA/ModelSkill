@@ -5,7 +5,8 @@ function getUserTools(mobj,src,caseid)
     %useCase - selected grid to add properties to
     if nargin<2 || isempty(src)
         usertools = {'Gross properties','Tabulate properties','Plot properties'...
-                     'Plot hypsometry','Network analysis','Cusp plot'};
+                     'Plot hypsometry','Plot X-Y property sets',...
+                     'Network analysis','Cusp plot'};
                      
         [selection,ok] = listdlg('Liststring',usertools,...
                                  'PromptString','Select tool:',...  
@@ -24,6 +25,8 @@ function getUserTools(mobj,src,caseid)
             getPropsPlot(mobj);
         case 'Plot hypsometry'
             getHypsPlot(mobj,caseid);
+        case 'Plot X-Y property sets'
+            getXYPlot(mobj)
         case 'Network analysis'
             getNetworkStats(mobj,caseid); 
         case 'Cusp plot'
@@ -60,6 +63,10 @@ function getGrossProperties(mobj,caseid)
     gprop = struct2cell(grossProperties(grid,wl,hyps))';    
     gpropdst = dstable(gprop{:},'DSproperties',PropsDSP('Gross'));
     
+    %assign case description to all dstables
+    wldst.Description = dst.Description;
+    hypsdst.Description = dst.Description;
+    gpropdst.Description = dst.Description;
     
     for i=2:nrec  %process all rows in the dstables
         wldst.DataTable = [wldst.DataTable;wls];
@@ -291,16 +298,18 @@ end
 %%
 function tabledata = getPropsTable(mobj,istab)
     %tabulate the gross properties in a figure
-    rN = 15; %No. of rows in the gross properties struct
+%     rN = 15; %No. of rows in the gross properties struct
     muicat = mobj.Cases;
     promptxt = 'Select a Model:';
-    [caserec,~] = selectCase(muicat,promptxt,'single',0);     
-
+    [caserec,ok] = selectCase(muicat,promptxt,'single',0);     
+    if ok<1, tabledata = []; return; end
+    
     %retrieve additional data from data set
     cobj = getCase(mobj.Cases,caserec);
     if isfield(cobj.Data,'GrossProps')
         tabledata = cobj.Data.GrossProps;
     else
+        warndlg('No GrossProps table for selected case');
         tabledata = []; 
         return;
     end
@@ -323,19 +332,7 @@ function getPropsPlot(mobj)
     hold on
     select = 1; count = 1;
     while select>0
-        tabledata = getPropsTable(mobj,false); 
-        if isempty(tabledata)
-            hold off
-            legend
-            return; 
-        end
-        PromptText = 'Select Variable'; %default if no varargin
-        ListSize = [300,250];           %default if no varargin
-        [varnum,ok] = listdlg('Name','Variable', ...
-                'ListSize',ListSize,...
-                'PromptString',PromptText, ...
-                'SelectionMode','single', ...
-                'ListString',tabledata.VariableNames);  
+        [tabledata,varnum,ok] = selectPlotData(mobj);
         if ok~=0
             data = tabledata.DataTable{:,varnum};
             x = tabledata.RowNames;
@@ -346,13 +343,86 @@ function getPropsPlot(mobj)
             answer = questdlg('Add another dataset?','Plot properties','Yes');
             if strcmp(answer,'No')
                 select = 0;
+                legend
             else
                 count = count+1;
             end
+        else
+            select = 0;
         end
     end
-    hold off
-    legend
+    hold off    
+end
+%%
+function getXYPlot(mobj)
+    %plot gross properties from groups of results
+    hf = figure('Name','Gross properties', ...
+                'Units','normalized', ...
+                'Resize','on','HandleVisibility','on', ...
+                'Tag','PlotFig');
+    ax = axes(hf);
+    hold on
+    select = 1; count = 1;
+    while select>0
+        [tabledataX,varnumX,okX] = selectPlotData(mobj);
+        [tabledataY,varnumY,okY] = selectPlotData(mobj);
+        if okX~=0 && okY~=0
+            dataX = tabledataX.DataTable{:,varnumX};                    
+            xname = tabledataX.Description;
+            dataY = tabledataY.DataTable{:,varnumY};        
+            yname = tabledataY.Description;
+            if height(tabledataX)~=height(tabledataY)
+                warndlg('Selected data are not the same length')
+                select = 0;
+            end
+            
+            if count==1
+                xlabel(tabledataX.VariableLabels{varnumX});
+                ylabel(tabledataY.VariableLabels{varnumY});
+            end
+            %
+            if strcmp(xname,yname)
+                metatxt = xname;
+            else
+                metatxt = springtf('%s-%s',xname,yname);
+            end
+            
+            plot(ax,dataX,dataY,'LineWidth',1,'DisplayName',metatxt);
+            xpts = tabledataX.RowNames;    
+            if ~isempty(xpts)
+                txtlabel = ['\leftarrow ',char(string(xpts(1)))];
+                text(dataX(1),dataY(1),txtlabel,'FontSize',8);
+                txtlabel = ['\leftarrow ',char(string(xpts(end)))];
+                text(dataX(end),dataY(end),txtlabel,'FontSize',8);
+            end
+            answer = questdlg('Add another dataset?','Plot properties','Yes');
+            if strcmp(answer,'No')
+                select = 0;
+                legend
+            else
+                count = count+1;
+            end
+        else
+            select = 0;
+        end
+    end
+    hold off    
+end
+%%
+function [tabledata,varnum,ok] = selectPlotData(mobj)
+    %select data set and variable to be used
+    tabledata = getPropsTable(mobj,false); 
+    if isempty(tabledata)
+        varnum = []; ok = 0;
+        return; 
+    end
+    PromptText = 'Select Variable'; %default if no varargin
+    ListSize = [300,250];           %default if no varargin
+    [varnum,ok] = listdlg('Name','Variable', ...
+            'ListSize',ListSize,...
+            'PromptString',PromptText, ...
+            'SelectionMode','single', ...
+            'ListString',tabledata.VariableNames);  
 end
 %%
 function hf = getCuspPlot(mobj,caseid)
@@ -584,7 +654,7 @@ function dsp = PropsDSP(type)
                                 'Ratio of storage volume to channel volume',...
                                 'Tidal amplitude (m)','Hydraulic depth (m)',...
                                 'Tidal amplitude to hydraulic depth ratio',...
-                                'Width (m)','Cross-sectiona area (m^2)',...
+                                'Width (m)','Cross-sectional area (m^2)',...
                                 'Prism to CSA ratio'},...
                         'QCflag',repmat({'model'},1,15));    
                 case 'Hyps'

@@ -90,7 +90,7 @@ classdef MS_GridData
                 list = dst.DataTable.Properties.RowNames;
                 irec = listdlg('PromptString','Select timestep:',...
                                'Name','Tab plot','SelectionMode','single',...
-                               'ListSize',[250,100],'ListString',list);
+                               'ListSize',[200,200],'ListString',list);
             else
                 irec = 1;
             end
