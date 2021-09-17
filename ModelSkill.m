@@ -146,7 +146,7 @@ classdef ModelSkill < muiModelUI
             tabs.Cases  = {'   Cases  ',@obj.refresh};        % << Edit tabs to suit model 
             tabs.Inputs = {'  Inputs  ',@obj.InputTabSummary};
             tabs.Plot   = {'  Q-Plot  ',@obj.getTabData};
-%             tabs.Stats = {'   Stats   ',@obj.getTabData};
+            tabs.Stats = {'   Stats   ',@obj.getTabData};
             subtabs = [];
         end
        
@@ -170,7 +170,9 @@ classdef ModelSkill < muiModelUI
                 case 'Plot' 
                      tabPlot(cobj,src);
                 case 'Stats'
-                     tabStats(cobj,src);    
+                    lobj = getClassObj(obj,'mUI','Stats',msg);
+                    if isempty(lobj), return; end
+                    tabStats(lobj,src);     
             end
         end      
 %% ------------------------------------------------------------------------
