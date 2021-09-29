@@ -53,12 +53,10 @@ classdef MS_RunParams < muiPropertyUI
     methods (Static)  
         function obj = setInput(mobj,editflag)
             %gui for user to set Parameter Input values
-            classname = 'MS_RunParams';               % <<Edit to classname
-            if isfield(mobj.Inputs,classname) && ...
-                            isa(mobj.Inputs.(classname),classname)
-                obj = mobj.Inputs.(classname);  
-            else
-                obj = MS_RunParams(mobj);             % << Edit to classname
+            classname = 'MS_RunParams';       
+            obj = getClassObj(mobj,'Inputs',classname);
+            if isempty(obj)
+                obj = MS_RunParams(mobj);            
             end
             %use muiPropertyUI function to generate UI
             if nargin<2 || editflag
@@ -66,7 +64,7 @@ classdef MS_RunParams < muiPropertyUI
                 obj = editProperties(obj);  
                 %add any additional manipulation of the input here
             end
-            mobj.Inputs.(classname) = obj;
+            setClassObj(mobj,'Inputs',classname,obj);
         end     
     end
 %%        
