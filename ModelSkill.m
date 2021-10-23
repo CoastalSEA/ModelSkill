@@ -146,7 +146,7 @@ classdef ModelSkill < muiModelUI
             tabs.Cases  = {'   Cases  ',@obj.refresh};        % << Edit tabs to suit model 
             tabs.Inputs = {'  Inputs  ',@obj.InputTabSummary};
             tabs.Plot   = {'  Q-Plot  ',@obj.getTabData};
-            tabs.Stats = {'   Stats   ',@obj.getTabData};
+            tabs.Stats = {'   Stats   ',@obj.setTabAction};
             subtabs = [];
         end
        
