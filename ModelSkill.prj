@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="762048759" file="D:\Work\Tools\MATLAB\MUImodels2\muiApps\ModelSkill\ModelSkill.prj" location="D:\Work\Tools\MATLAB\MUImodels2\muiApps\ModelSkill" name="ModelSkill" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="1740975450" file="D:\Work\Tools\MATLAB\MUImodels2\muiApps\ModelSkill\ModelSkill.prj" location="D:\Work\Tools\MATLAB\MUImodels2\muiApps\ModelSkill" name="ModelSkill" target="target.mlapps" target-name="Package App">
     <param.appname>ModelSkill</param.appname>
     <param.authnamewatermark>Ian Townend</param.authnamewatermark>
     <param.email>i.townend@soton.ac.uk</param.email>
@@ -13,7 +13,7 @@
     <param.summary>ModelSkill provides tools to load gridded, meshed or timeseries (vector) data and to plot the data on a Taylor diagram.</param.summary>
     <param.description>ModelSkill enables data to be loaded and then compared on a Taylor diagram. This form of plot was originally proposed for the comparison of model timeseries output (Taylor, 2001) and has subsequently been adapted for the comparison of morphological model outputs (Bosboom and Reniers, 2014; Bosboom et al., 2014). In this implementation the Taylor approach is used but modified in line with Bosboom of the analysis of grid and mesh data. The options include the ability to create and add points to a Taylor diagram, output the results to the Clipboard, and estimate global and local skill scores.</param.description>
     <param.screenshot>${PROJECT_ROOT}\ModelSkill_logo.jpg</param.screenshot>
-    <param.version>1.0</param.version>
+    <param.version>2.0</param.version>
     <param.products.name>
       <item>MATLAB</item>
     </param.products.name>
@@ -27,7 +27,6 @@
     <param.output>${PROJECT_ROOT}</param.output>
     <param.guid>a9c4ee73-0fd4-450f-97e3-52f77de998c5</param.guid>
     <unset>
-      <param.version />
       <param.platforms />
       <param.output />
     </unset>
@@ -46,6 +45,7 @@
       <file>${PROJECT_ROOT}\example</file>
       <file>${PROJECT_ROOT}\help\html</file>
       <file>${PROJECT_ROOT}\info.xml</file>
+      <file>${PROJECT_ROOT}\ModelSkill_logo.jpg</file>
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
