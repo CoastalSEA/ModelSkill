@@ -274,7 +274,7 @@ classdef MS_GridData
 %%
         function qcData(obj,classrec,catrec,muicat) %#ok<INUSD>
             %quality control a dataset
-            warndlg('No qualtiy control defined for this format');
+            warndlg('No quality control defined for this format');
         end    
 %%
         function tabPlot(obj,src)
@@ -439,7 +439,7 @@ classdef MS_GridData
         
 %%
         function ax = plotGrid(~,hf,x,y,z)
-            %create plot of perturpation from initial surface
+            %create plot of perturbation from initial surface
             ax = axes(hf);
             pcolor(ax,x,y,z)
             shading interp
