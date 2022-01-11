@@ -32,11 +32,19 @@
 
 %% Setup
 % * *Input Data*: import data from a file.
-% * *Input Data > Grid/Mesh Data*: Load/Add/Delete/QC gridded data from file
-% * *Input Data > Regrid Data*: Use defined grid dimensions or an existing
+% * *Input Data > Gridded Data*: Load/Add/Delete/QC gridded data from file.
+% * *Input Data > Timeseries*: Load/Add/Delete/QC timeseries data from file.
+% * *Grid Parameters*: dialogue to define model run parameters.
+% * *Grid Tools*: functions to manipulate a gridded dataset.
+% * *Grid Tools > Translate Grid*: change the co-ordinates of the grid origin.
+% * *Grid Tools > Rotate Grid*: flip or rotate the grid orientation.
+% * *Grid Tools > Re-Grid*: Use defined grid dimensions or an existing
 % grid to change the resolution of the grid (useful for doing differences).
-% * *Input Data > Timeseries*: Load/Add/Delete/QC gridded data from file
-% * *Run Parameters*: dialogue to define model run parameters.
+% * *Grid Tools > Sub-Grid*: extract a sub-grid from an existing grid.
+% * *Grid Tools > Combine Grids*: merge two grids based on the minimum or
+% maximum values at each point in the grid.
+% * *Grid Tools > Export xyz Grid*: export a grid as x,y,z tuples.
+% * *Run Parameters*: dialogue to define parameters for model skill estimates.
 % * *Model Constants*: a number of constants are used in the model. Generally, the default values are appropriate but these can be adjusted and saved with the project if required.
 
 %% Run
@@ -44,7 +52,7 @@
 % relative to a reference grid or timeseries.
 % * *User Tools*: options to generate addtional properties or statistics
 % for gridded datasets, including Gross properties (tables and plots),
-% Hypsometry, Network analysis and a plot specific to rhythmic data (such s cusps).
+% Hypsometry, Network analysis and a plot specific to rhythmic data (such as cusps).
 % * *Derive Output*: initialises the Derive Output UI to select and define manipulations of the data or call external functions and load the result as new data set.
 
 %% Analysis

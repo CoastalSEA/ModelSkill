@@ -98,25 +98,29 @@ classdef ModelSkill < muiModelUI
             menu.Project(3).Callback = repmat({@obj.projectMenuOptions},[1,2]);
             
             %% Setup menu -------------------------------------------------
-            menu.Setup(1).List = {'Input Data',...
-                                      'Run Parameters','Model Constants'};                                    
-            menu.Setup(1).Callback = [{'gcbo;'},repmat({@obj.setupMenuOptions},[1,2])];
+            menu.Setup(1).List = {'Input Data','Grid Parameters','Grid Tools',...
+                                  'Run Parameters','Model Constants'};                                    
+            menu.Setup(1).Callback = [{'gcbo;'},{@obj.setupMenuOptions},...
+                          {'gcbo;'},repmat({@obj.setupMenuOptions},[1,2])];
             %add separators to menu list (optional - default is off)
-            menu.Setup(1).Separator = {'off','off','on'}; %separator preceeds item
+            menu.Setup(1).Separator = [repmat({'off'},[1,4]),{'on'}]; %separator preceeds item
             
             % submenu for Import Data (if these are changed need to edit
             % loadMenuOptions to be match)
-            menu.Setup(2).List = {'Grid/Mesh Data','Regrid Data',...
-                                            'Subgrid Data','Timeseries'};
-            menu.Setup(2).Callback = [{'gcbo;'},...
-                {@(src,evt)MS_GridData.reGridData(obj,src,evt)},...
-                {@(src,evt)MS_GridData.subGridData(obj,src,evt)},{'gcbo;'}];
-            % submenu for Timeseries Data 
+            menu.Setup(2).List = {'Gridded Data','Timeseries'};
+            menu.Setup(2).Callback = {'gcbo;','gcbo;'};
+            % submenu for Gridded and Timeseries Data 
             nitems = 2;
             for j=1:nitems  %add standard submenu to all import menu items
                 menu.Setup(j+2).List = {'Load','Add','Delete','Quality Control'};
                 menu.Setup(j+2).Callback = repmat({@obj.loadMenuOptions},[1,4]);
             end
+            % submenu for Grid Tools
+            menu.Setup(5).List = {'Translate Grid','Rotate Grid',...
+                                  'Re-Grid','Sub-Grid',...
+                                  'Combine Grids','Export xyz Grid'};                                                        
+            menu.Setup(5).Callback = repmat({@obj.gridMenuOptions},[1,6]);
+            menu.Setup(5).Separator = [repmat({'off'},[1,5]),{'on'}];             
             
             %% Run menu ---------------------------------------------------
             menu.Run(1).List = {'Taylor Diagram','User Tools','Derive Output'};
@@ -159,18 +163,19 @@ classdef ModelSkill < muiModelUI
             % (rows) and width of input text and values. Inidcative
             % positions:  top left [0.95,0.48];    top right [0.95,0.97]
             %         bottom left [0.45, 0.48]; bottom rigth [0.45,0.97]
-            props = {...                                    
-                'MS_RunParams','Inputs',[0.95,0.70],{200,160},'Input parameters:'};
+            props = {...
+                'MS_RunParams','Inputs',[0.40,0.50],{170,80},'Skill model parameters:'; ...
+                'GD_GridProps','Inputs',[0.90,0.50],{160,90}, 'Grid parameters:'};
         end    
  %%
-        function setTabAction(~,src,cobj)
+        function setTabAction(obj,src,cobj)
             %function required by muiModelUI and sets action for selected
             %tab (src)
-            switch src.Tag                                    % << Edit match tab requirements
+            switch src.Tag                                  
                 case 'Plot' 
                      tabPlot(cobj,src);
-                case 'Stats'
-                    lobj = getClassObj(obj,'mUI','Stats',msg);
+                case 'Stats'                    
+                    lobj = getClassObj(obj,'mUI','Stats');
                     if isempty(lobj), return; end
                     tabStats(lobj,src);     
             end
@@ -191,6 +196,11 @@ classdef ModelSkill < muiModelUI
         function setupMenuOptions(obj,src,~)
             %callback functions for data input
             switch src.Text
+                case 'Grid Parameters'
+                    GD_GridProps.setInput(obj);  
+                    %update tab display with input data
+                    tabsrc = findobj(obj.mUI.Tabs,'Tag','Inputs');
+                    InputTabSummary(obj,tabsrc);
                 case 'Run Parameters'                         
                     MS_RunParams.setInput(obj);  
                     %update tab display with input data
@@ -200,27 +210,19 @@ classdef ModelSkill < muiModelUI
                     obj.Constants = setInput(obj.Constants);
             end
         end  
-%%
-%         function loadMenuOptions(obj,src,~)
-%             %callback functions to import data
-%             switch src.Text
-%                 case 'Grid/Mesh Data'
-%                     MS_GridData.loadGridData;
-%                 case 'Regrid Data'
-%                     MS_GridData.reGridData;
-%                 case 'Timeseries'
-%                     classname = 'muiUserData';
-%                     fname = sprintf('%s.loadData',classname);
-%                     callStaticFunction(obj,classname,fname); 
-%             end
-%             DrawMap(obj);
-%         end   
+        %%
+        function gridMenuOptions(obj,src,~)
+            %callback functions for grid tools options
+            gridclasses = {'GD_ImportData'}; %add other classes if needed
+            GD_ImportData.gridMenuOptions(obj,src,gridclasses);
+            DrawMap(obj);
+        end
 %%
         function loadMenuOptions(obj,src,~)
             %callback functions to import timeseries data
             switch src.Parent.Text
-                case 'Grid/Mesh Data'
-                    classname = 'MS_GridData';
+                case 'Gridded Data'
+                    classname = 'GD_ImportData';
                 case 'Timeseries'
                     classname = 'muiUserData';
             end
@@ -232,7 +234,7 @@ classdef ModelSkill < muiModelUI
                 case 'Add'
                     useCase(obj.Cases,'single',{classname},'addData');
                 case 'Delete'
-                    useCase(obj.Cases,'single',{classname},'deleteData');
+                    useCase(obj.Cases,'single',{classname},'deleteGrid');
                 case 'Quality Control'
                     useCase(obj.Cases,'single',{classname},'qcData');
             end
@@ -264,7 +266,7 @@ classdef ModelSkill < muiModelUI
 
         %% Help menu ------------------------------------------------------
         function Help(~,~,~)
-            docsearch ModelSkill                               % << Edit to documentation name if available
+            docsearch ModelSkill                             
         end
 %% ------------------------------------------------------------------------
 % Overload muiModelUI.MapTable to customise Tab display of records (if required)
