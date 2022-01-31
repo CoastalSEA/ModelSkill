@@ -1,5 +1,6 @@
 %% ModelSkill
-% Toolbox for sediment related analyses
+% Matlab App for exploring the skill score between timeseries data sets or
+% gridded data sets.
 
 %% Licence
 % The code is provided as Open Source code (issued under a GNU General 
@@ -47,14 +48,14 @@
 %  Run>User Tools
 %     Access to a set of bespoke tools for analysing tidal inlets and estuaries to compute, tabulat
 %     and plot gross properties, hypsometry and network properties.
-%  Run>Dereive output
+%  Run>Derive output
 %     Manipulate data using external functions of Matlab functions to
 %     created new datasets.
 % 	
 %  Plot>Plot Menu
 %     Access standard plotting UI for 2d and 3d plotting options.
 % 	
-% Scenarios are listed based on the user descriptions on the Scenarios tab.
+% Scenarios are listed based on the user descriptions on the Cases tab.
 %% Manual
 % The <matlab:open_manual manual> provides further details of setup and 
 % configuration of the model. The files for the example use case can be found in
