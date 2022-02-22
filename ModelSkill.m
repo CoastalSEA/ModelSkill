@@ -266,7 +266,7 @@ classdef ModelSkill < muiModelUI
 
         %% Help menu ------------------------------------------------------
         function Help(~,~,~)
-            docsearch ModelSkill                             
+            doc modelskill                             
         end
 %% ------------------------------------------------------------------------
 % Overload muiModelUI.MapTable to customise Tab display of records (if required)

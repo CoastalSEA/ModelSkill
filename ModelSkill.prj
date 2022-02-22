@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="1740975450" file="D:\Work\Tools\MATLAB\MUImodels2\muiApps\ModelSkill\ModelSkill.prj" location="D:\Work\Tools\MATLAB\MUImodels2\muiApps\ModelSkill" name="ModelSkill" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="4193160322" file="D:\Work\Tools\MATLAB\MUImodels2\muiApps\ModelSkill\ModelSkill.prj" location="D:\Work\Tools\MATLAB\MUImodels2\muiApps\ModelSkill" name="ModelSkill" target="target.mlapps" target-name="Package App">
     <param.appname>ModelSkill</param.appname>
     <param.authnamewatermark>Ian Townend</param.authnamewatermark>
     <param.email>i.townend@soton.ac.uk</param.email>
@@ -38,7 +38,6 @@
       <file>${PROJECT_ROOT}\getUserTools.m</file>
       <file>${PROJECT_ROOT}\MS_GridData.m</file>
       <file>${PROJECT_ROOT}\MS_RunParams.m</file>
-      <file>${PROJECT_ROOT}\network_count.m</file>
     </fileset.depfun>
     <fileset.resources>
       <file>${PROJECT_ROOT}\doc</file>
@@ -46,6 +45,7 @@
       <file>${PROJECT_ROOT}\help\html</file>
       <file>${PROJECT_ROOT}\info.xml</file>
       <file>${PROJECT_ROOT}\ModelSkill_logo.jpg</file>
+      <file>D:\Work\Tools\MATLAB\MUImodels2\muiApps\muiAppGridFcns</file>
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
