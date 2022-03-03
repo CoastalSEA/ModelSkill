@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Menu Options</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-01-05"><meta name="DC.source" content="modelskill_menus.m"><style type="text/css">
+      --><title>Menu Options</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-03-03"><meta name="DC.source" content="modelskill_menus.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,13 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Menu Options</h1><!--introduction--><p>Summary of the options available for each drop down menu.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">File</a></li><li><a href="#2">Tools</a></li><li><a href="#3">Project</a></li><li><a href="#5">Setup</a></li><li><a href="#6">Run</a></li><li><a href="#7">Analysis</a></li><li><a href="#8">Help</a></li><li><a href="#9">See Also</a></li></ul></div><h2 id="1">File</h2><div><ul><li><b>New</b>: clears any existing model (prompting to save if not already saved) and a popup dialog box prompts for Project name and Date (default is current date).</li><li><b>Open</b>: existing Asmita models are saved as *.mat files. User selects a model from dialog box.</li><li><b>Save</b>: save a file that has already been saved.</li><li><b>Save as</b>: save a file with a new or different name.</li><li><b>Exit</b>: exit the program. The close window button has the same effect.</li></ul></div><h2 id="2">Tools</h2><div><ul><li><b>Refresh</b>: updates Cases tab.</li><li><b>Clear all &gt; Project</b>: deletes the current project, including all Setup data and all Cases.</li><li><b>Clear all &gt; Figures</b>: deletes all results plot figures (useful if a large number of plots have been produced).</li><li><b>Clear all &gt; Cases</b>: deletes all Cases listed on the Cases tab but does not affect the model setup.</li></ul></div><h2 id="3">Project</h2><div><ul><li><b>Project Info</b>: edit the Project name and Date</li><li><b>Cases &gt; Edit Description</b>: user selects a Case to edit the Case description.</li><li><b>Cases &gt; Edit Data Set</b>: initialises the Edit Data UI for editing data sets.</li><li><b>Cases &gt; Save</b>: user selects a data set to be saved from a list box of Cases and the is then prompted to name the file. The data are written to an Excel spreadsheet.</li><li><b>Cases &gt; Delete</b>: user selects Case(s) to be deleted from a list box of Cases and results are then deleted (model setup is not changed).</li><li><b>Cases &gt; Reload</b>: user selects a Case to reload as the current parameter settings.</li><li><b>Cases &gt; View settings</b>: user selects a Case to display a table listing the parameters used for the selected Case.</li><li><b>Export/Import &gt; Export</b>: user selects a Case class instance to export as a mat file.</li><li><b>Export/Import &gt; Import</b>: user selects an exported Case class instance (mat file) to be loaded.</li></ul></div><p><b>NB</b>: to export the data from a Case for use in another application (eg text file, Excel, etc), use the <b>Project&gt;Cases&gt;Edit Data Set</b> option to make a selection and then use the &#8216;Copy to Clipboard&#8217; button to paste the selection to the clipboard.</p><h2 id="5">Setup</h2><div><ul><li><b>Input Data</b>: import data from a file.</li><li><b>Input Data &gt; Gridded Data</b>: Load/Add/Delete/QC gridded data from file.</li><li><b>Input Data &gt; Timeseries</b>: Load/Add/Delete/QC timeseries data from file.</li><li><b>Grid Parameters</b>: dialogue to define model run parameters.</li><li><b>Grid Tools</b>: functions to manipulate a gridded dataset.</li><li><b>Grid Tools &gt; Translate Grid</b>: change the co-ordinates of the grid origin.</li><li><b>Grid Tools &gt; Rotate Grid</b>: flip or rotate the grid orientation.</li><li><b>Grid Tools &gt; Re-Grid</b>: Use defined grid dimensions or an existing grid to change the resolution of the grid (useful for doing differences).</li><li><b>Grid Tools &gt; Sub-Grid</b>: extract a sub-grid from an existing grid.</li><li><b>Grid Tools &gt; Combine Grids</b>: merge two grids based on the minimum or maximum values at each point in the grid.</li><li><b>Grid Tools &gt; Export xyz Grid</b>: export a grid as x,y,z tuples.</li><li><b>Run Parameters</b>: dialogue to define parameters for model skill estimates.</li><li><b>Model Constants</b>: a number of constants are used in the model. Generally, the default values are appropriate but these can be adjusted and saved with the project if required.</li></ul></div><h2 id="6">Run</h2><div><ul><li><b>Taylor Diagram</b>: generate a Taylor diagram using grids or timeseries relative to a reference grid or timeseries.</li><li><b>User Tools</b>: options to generate addtional properties or statistics for gridded datasets, including Gross properties (tables and plots), Hypsometry, Network analysis and a plot specific to rhythmic data (such as cusps).</li><li><b>Derive Output</b>: initialises the Derive Output UI to select and define manipulations of the data or call external functions and load the result as new data set.</li></ul></div><h2 id="7">Analysis</h2><div><ul><li><b>Plots</b>: initialises the Plot UI to select variables and produce various types of plot. The user selects the Case, Dataset and Variable to used, along with the Plot type and any Scaling to be applied from a series of drop down lists,</li><li><b>Statistics</b>: initialiss the Statistics UI to select data and run a range of standard statistical methods.</li></ul></div><h2 id="8">Help</h2><div><ul><li><b>Help</b>: access the online documentation for CoastalTools.</li></ul></div><h2 id="9">See Also</h2><p>The <a href="matlab:open_manual">manual</a> provides further details of setup and configuration of the model.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+  </style></head><body><div class="content"><h1>Menu Options</h1><!--introduction--><p>Summary of the options available for each drop down menu.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">File</a></li><li><a href="#2">Tools</a></li><li><a href="#3">Project</a></li><li><a href="#5">Setup &gt; Input Data</a></li><li><a href="#8">Setup &gt; Grid Tools</a></li><li><a href="#9">Setup (other)</a></li><li><a href="#10">Run</a></li><li><a href="#13">Analysis</a></li><li><a href="#14">Help</a></li><li><a href="#15">See Also</a></li></ul></div><h2 id="1">File</h2><div><ul><li><b>New</b>: clears any existing model (prompting to save if not already saved) and a popup dialog box prompts for Project name and Date (default is current date).</li><li><b>Open</b>: existing Asmita models are saved as *.mat files. User selects a model from dialog box.</li><li><b>Save</b>: save a file that has already been saved.</li><li><b>Save as</b>: save a file with a new or different name.</li><li><b>Exit</b>: exit the program. The close window button has the same effect.</li></ul></div><h2 id="2">Tools</h2><div><ul><li><b>Refresh</b>: updates Cases tab.</li><li><b>Clear all &gt; Project</b>: deletes the current project, including all Setup data and all Cases.</li><li><b>Clear all &gt; Figures</b>: deletes all results plot figures (useful if a large number of plots have been produced).</li><li><b>Clear all &gt; Cases</b>: deletes all Cases listed on the Cases tab but does not affect the model setup.</li></ul></div><h2 id="3">Project</h2><div><ul><li><b>Project Info</b>: edit the Project name and Date</li><li><b>Cases &gt; Edit Description</b>: user selects a Case to edit the Case description.</li><li><b>Cases &gt; Edit Data Set</b>: initialises the Edit Data UI for editing data sets.</li><li><b>Cases &gt; Save</b>: user selects a data set to be saved from a list box of Cases and the is then prompted to name the file. The data are written to an Excel spreadsheet.</li><li><b>Cases &gt; Delete</b>: user selects Case(s) to be deleted from a list box of Cases and results are then deleted (model setup is not changed).</li><li><b>Cases &gt; Reload</b>: user selects a Case to reload as the current parameter settings.</li><li><b>Cases &gt; View settings</b>: user selects a Case to display a table listing the parameters used for the selected Case.</li><li><b>Export/Import &gt; Export</b>: user selects a Case class instance to export as a mat file.</li><li><b>Export/Import &gt; Import</b>: user selects an exported Case class instance (mat file) to be loaded.</li></ul></div><p>
+<table border=1><tr><td><u>Note</u>: to export the data from a Case for use in another application
+(eg text file, Excel, etc), use the <b>Project>Cases>Edit Data Set</b> option
+to make a selection and then use the <i>Copy to Clipboard</i> button to paste
+the selection to the clipboard.
+</td></tr></table>
+</p><h2 id="5">Setup &gt; Input Data</h2><p>Load data from a file. To create a new instance (e.g. for a different location or data source) use Load. To add data to an existing data set, use Add.</p><div><ul><li><b>Input Data &gt; Gridded Data</b>: <i>Load/Add/Delete/Quality Control</i> gridded data from file.</li><li><b>Input Data &gt; Timeseries</b>: <i>Load/Add/Delete/Quality Control</i> timeseries data from file.</li></ul></div><div><ul><li><i>Load</i>: prompts user for file to be loaded. Once files have been read, user is prompted for a description (working title) for the data set.</li><li><i>Add</i>: prompts user for file to be loaded (only one file at a time can be added). Only files with the same dimensions as the existing data set can be used to Add data to a data record.</li><li><i>Delete</i>: delete a grid from an existing Case table (ie a row).</li><li><i>Quality Control</i>: data specific quality control to clean up data sets. Only available if defined for the specific data type.</li></ul></div><h2 id="8">Setup &gt; Grid Tools</h2><div><ul><li><b>Translate Grid</b>: interactively translate grid x-y coordinates.</li><li><b>Rotate Grid</b>: interactively flip or rotate grid.</li><li><b>Re-Grid</b>: regrid a gridded dataset to match another grid or to user specified dimensions.</li><li><b>Sub-Grid</b>: interactively define a subgrid and save grid as a new Case.</li><li><b>Combine Grids</b>: superimpose one grid on another based on maximum or minimum set of values.</li><li><b>Add Surface</b>: add horizontal surface to an existing grid.</li><li><b>To curvilinear</b>: map grid from cartesian to curvilinear coordinates.</li><li><b>From curvilinear</b>: map grid from curvilinear to cartesian coordinates.</li><li><b>Difference Plot</b>: generate a plot of the difference between two grids.</li><li><b>Export xyz Grid</b>: select a Case and export grid as xyz tuples.</li></ul></div><h2 id="9">Setup (other)</h2><div><ul><li><b>Grid Parameters</b>: dialogue to set dimensions of default grid</li><li><b>Run Parameters</b>: dialogue to define parameters for model skill estimates.</li><li><b>Model Constants</b>: a number of constants are used in the model. Generally, the default values are appropriate but these can be adjusted and saved with the project if required.</li></ul></div><h2 id="10">Run</h2><div><ul><li><b>Taylor Diagram</b>: generate a Taylor diagram using grids or timeseries relative to a reference grid or timeseries.</li><li><b>Inlet Tools</b>:  tools to investigate grids which define inlets, estuaries or tidal basins, including:</li></ul></div><div><ul><li>&gt;_Add Properties_: add form properties to a gridded data.</li><li>&gt;_Delete Properties_: delete ALL property tables associated with a selected gridded data set.</li><li>&gt;_Tabulate Properties_: tabulate the gross properties for all timesteps in Selected Case.</li><li>&gt;_Plot Properties_: plot selected gross properties for selected Cases as a function of time.</li><li>&gt;_Plot Hypsometry_: plot surface area and volume hypsometry for one or more selected Cases and time intervals.</li><li>&gt;_Plot X-Y property sets_: plot selected gross properties as X and Y to show co-variant change over time. Selected Cases must be the same length and are assumed to have contemporaneous points.</li></ul></div><div><ul><li><b>User Tools</b>: options to generate additional properties, statistics and plots for gridded datasets, including analysis of networks (such as dendritic channels) and rhythmic data (such as cusps).</li><li><b>Derive Output</b>: initialises the Derive Output UI to select and define manipulations of the data or call external functions and load the result as new data set.</li></ul></div><h2 id="13">Analysis</h2><div><ul><li><b>Plots</b>: initialises the Plot UI to select variables and produce various types of plot. The user selects the Case, Dataset and Variable to used, along with the Plot type and any Scaling to be applied from a series of drop down lists,</li><li><b>Statistics</b>: initialiss the Statistics UI to select data and run a range of standard statistical methods.</li></ul></div><h2 id="14">Help</h2><div><ul><li><b>Help</b>: access the online documentation for CoastalTools.</li></ul></div><h2 id="15">See Also</h2><p>The <a href="matlab:open_manual">manual</a> provides further details of setup and configuration of the model.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Menu Options
 % Summary of the options available for each drop down menu.
@@ -95,35 +101,68 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 % * *Cases > View settings*: user selects a Case to display a table listing the parameters used for the selected Case. 
 % * *Export/Import > Export*: user selects a Case class instance to export as a mat file.
 % * *Export/Import > Import*: user selects an exported Case class instance (mat file) to be loaded.
-%%
-% *NB*: to export the data from a Case for use in another application 
-% (eg text file, Excel, etc), use the *Project>Cases>Edit Data Set* option 
-% to make a selection and then use the ‘Copy to Clipboard’ button to paste 
-% the selection to the clipboard.
 
-%% Setup
-% * *Input Data*: import data from a file.
-% * *Input Data > Gridded Data*: Load/Add/Delete/QC gridded data from file.
-% * *Input Data > Timeseries*: Load/Add/Delete/QC timeseries data from file.
-% * *Grid Parameters*: dialogue to define model run parameters.
-% * *Grid Tools*: functions to manipulate a gridded dataset.
-% * *Grid Tools > Translate Grid*: change the co-ordinates of the grid origin.
-% * *Grid Tools > Rotate Grid*: flip or rotate the grid orientation.
-% * *Grid Tools > Re-Grid*: Use defined grid dimensions or an existing
-% grid to change the resolution of the grid (useful for doing differences).
-% * *Grid Tools > Sub-Grid*: extract a sub-grid from an existing grid.
-% * *Grid Tools > Combine Grids*: merge two grids based on the minimum or
-% maximum values at each point in the grid.
-% * *Grid Tools > Export xyz Grid*: export a grid as x,y,z tuples.
+%%
+% <html>
+% <table border=1><tr><td><u>Note</u>: to export the data from a Case for use in another application 
+% (eg text file, Excel, etc), use the <b>Project>Cases>Edit Data Set</b> option 
+% to make a selection and then use the <i>Copy to Clipboard</i> button to paste 
+% the selection to the clipboard.
+% </td></tr></table>
+% </html>
+
+%% Setup > Input Data
+% Load data from a file. To create a new instance (e.g. for a
+% different location or data source) use Load. To add data to an
+% existing data set, use Add.
+%%
+% * *Input Data > Gridded Data*: _Load/Add/Delete/Quality Control_ gridded data from file.
+% * *Input Data > Timeseries*: _Load/Add/Delete/Quality Control_ timeseries data from file.
+%%
+% * _Load_: prompts user for file to be loaded. Once files have been read, user is prompted for a description (working title) for the data set. 
+% * _Add_: prompts user for file to be loaded (only one file at a time can be added). Only files with the same dimensions as the existing data set can be used to Add data to a data record.
+% * _Delete_: delete a grid from an existing Case table (ie a row).
+% * _Quality Control_: data specific quality control to clean up data sets.
+% Only available if defined for the specific data type.
+
+%% Setup > Grid Tools
+% * *Translate Grid*: interactively translate grid x-y
+% coordinates.
+% * *Rotate Grid*: interactively flip or rotate grid.   
+% * *Re-Grid*: regrid a gridded dataset to match another grid or to user
+% specified dimensions.
+% * *Sub-Grid*: interactively define a subgrid and save grid as a new Case.               
+% * *Combine Grids*: superimpose one grid on another based on maximum
+% or minimum set of values.
+% * *Add Surface*: add horizontal surface to an existing grid.
+% * *To curvilinear*: map grid from cartesian to curvilinear coordinates. 
+% * *From curvilinear*: map grid from curvilinear to cartesian coordinates.
+% * *Difference Plot*: generate a plot of the difference between two grids.
+% * *Export xyz Grid*: select a Case and export grid as xyz tuples.
+
+%% Setup (other)
+% * *Grid Parameters*: dialogue to set dimensions of default grid
 % * *Run Parameters*: dialogue to define parameters for model skill estimates.
 % * *Model Constants*: a number of constants are used in the model. Generally, the default values are appropriate but these can be adjusted and saved with the project if required.
 
 %% Run
 % * *Taylor Diagram*: generate a Taylor diagram using grids or timeseries
 % relative to a reference grid or timeseries.
-% * *User Tools*: options to generate addtional properties or statistics
-% for gridded datasets, including Gross properties (tables and plots),
-% Hypsometry, Network analysis and a plot specific to rhythmic data (such as cusps).
+% * *Inlet Tools*:  tools to investigate grids which define inlets, 
+% estuaries or tidal basins, including:
+%%
+% * >_Add Properties_: add form properties to a gridded data.
+% * >_Delete Properties_: delete ALL property tables associated with a 
+% selected gridded data set.
+% * >_Tabulate Properties_: tabulate the gross properties for all timesteps in Selected Case.
+% * >_Plot Properties_: plot selected gross properties for selected Cases as a function of time.
+% * >_Plot Hypsometry_: plot surface area and volume hypsometry for one or more selected Cases and time intervals.
+% * >_Plot X-Y property sets_: plot selected gross properties as X and Y to show co-variant change over time. Selected Cases must be the same length and are assumed to have contemporaneous points. 
+
+%%
+% * *User Tools*: options to generate additional properties, statistics and
+% plots for gridded datasets, including analysis of networks (such as 
+% dendritic channels) and rhythmic data (such as cusps).
 % * *Derive Output*: initialises the Derive Output UI to select and define manipulations of the data or call external functions and load the result as new data set.
 
 %% Analysis

@@ -333,7 +333,7 @@ function Jd = geonet_diffusion(J,method,N,K,dt,sigma2)
     %  method = 'lin':  Linear diffusion (constant c=1).
     %           'pm1': perona-malik, c=exp{-(|grad(J)|/K)^2} [PM90]
     %           'pm2': perona-malik, c=1/{1+(|grad(J)|/K)^2} [PM90]
-    %           'tukey: ??
+    %           'tukey: c=0.5*((1-(grad(J)/K)^2)^2)*grad(J)
     %           'rmp': complex valued - ramp preserving [GSZ01]
     %  K    edge threshold parameter (lambda)
     %  N    number of iterations

@@ -42,9 +42,9 @@ classdef ModelSkill < muiModelUI
             %tabs to include in DataUIs for plotting and statistical analysis
             %select which of the options are needed and delete the rest
             %Plot options: '2D','3D','4D','2DT','3DT','4DT'
-            obj.DataUItabs.Plot = {'2D','3D','4D','2DT','3DT','4DT'};  
+            obj.DataUItabs.Plot = {'2D','3D','2DT','3DT'};  
             %Statistics options: 'General','Timeseries','Taylor','Intervals'
-            obj.DataUItabs.Stats = {'General','Timeseries','Taylor','Intervals'};  
+            obj.DataUItabs.Stats = {'General','Timeseries','Taylor'};  
             
             modelLogo = 'ModelSkill_logo.jpg';  %default splash figure - edit to alternative
             initialiseUI(obj,modelLogo); %initialise menus and tabs                  
@@ -123,8 +123,9 @@ classdef ModelSkill < muiModelUI
             menu.Setup(5).Separator = [repmat({'off'},[1,5]),{'on'}];             
             
             %% Run menu ---------------------------------------------------
-            menu.Run(1).List = {'Taylor Diagram','User Tools','Derive Output'};
-            menu.Run(1).Callback = repmat({@obj.runMenuOptions},[1,3]);
+            menu.Run(1).List = {'Taylor Diagram','Inlet Tools','User Tools','Derive Output'};
+            menu.Run(1).Callback = repmat({@obj.runMenuOptions},[1,4]);
+            menu.Run(1).Separator = [repmat({'off'},[1,3]),{'on'}];
             
             %% Plot menu --------------------------------------------------  
             menu.Analysis(1).List = {'Plots','Statistics'};
@@ -164,7 +165,7 @@ classdef ModelSkill < muiModelUI
             % positions:  top left [0.95,0.48];    top right [0.95,0.97]
             %         bottom left [0.45, 0.48]; bottom rigth [0.45,0.97]
             props = {...
-                'MS_RunParams','Inputs',[0.40,0.50],{170,80},'Skill model parameters:'; ...
+                'MS_RunParams','Inputs',[0.40,0.77],{220,180},'Skill model parameters:'; ...
                 'GD_GridProps','Inputs',[0.90,0.50],{160,90}, 'Grid parameters:'};
         end    
  %%
@@ -244,10 +245,21 @@ classdef ModelSkill < muiModelUI
         %% Run menu -------------------------------------------------------
         function runMenuOptions(obj,src,~)
             %callback functions to run model
+            muicat = obj.Cases;   %handle to muiCatalogue
+            promptxt = 'Select a Case to use:'; 
+            gridclasses = {'GD_ImportData'};
             switch src.Text                   
                 case 'Taylor Diagram'
                     getTaylorPlot(obj); 
+                case 'Inlet Tools'                    
+%                     [cobj,~] = selectCaseObj(muicat,[],gridclasses,promptxt);
+%                     if isempty(cobj), return; end
+                    getInletTools(obj);
                 case 'User Tools'
+%                     [cobj,classrec] = selectCaseObj(muicat,[],gridclasses,promptxt);
+%                     if isempty(cobj), return; end
+%                     getUserTools(cobj,classrec,muicat);
+                    
                     getUserTools(obj);
                 case 'Derive Output'
                     obj.mUI.Manip = muiManipUI.getManipUI(obj);

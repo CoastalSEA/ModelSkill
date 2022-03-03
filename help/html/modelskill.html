@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>ModelSkill</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-01-27"><meta name="DC.source" content="modelskill.m"><style type="text/css">
+      --><title>ModelSkill</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-03-03"><meta name="DC.source" content="modelskill.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,30 +67,23 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>ModelSkill</h1><!--introduction--><p>Matlab App for exploring the skill score between timeseries data sets or gridded data sets.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Licence</a></li><li><a href="#2">Requirements</a></li><li><a href="#3">Background</a></li><li><a href="#4">ModelSkill classes</a></li><li><a href="#5">ModelSkill functions</a></li><li><a href="#7">Manual</a></li><li><a href="#8">See Also</a></li></ul></div><h2 id="1">Licence</h2><p>The code is provided as Open Source code (issued under a GNU General Public License).</p><h2 id="2">Requirements</h2><p>ModelUI is written in Matlab&#8482; and requires v2016b, or later. In addition, ModelUI requires both the <a href="matlab:doc('dstoolbox')">dstoolbox</a> and the <a href="matlab:doc('muitoolbox')">muitoolbox</a></p><h2 id="3">Background</h2><h2 id="4">ModelSkill classes</h2><p><b>ModelSkill</b> - defines the behaviour of the main UI.</p><h2 id="5">ModelSkill functions</h2><p>Compare data sets (timeseries or gridded data) using Taylor diagram and skill score.</p><pre>Quick Guide to setting up a new project
+  </style></head><body><div class="content"><h1>ModelSkill</h1><!--introduction--><p>Matlab App for exploring the skill score between timeseries data sets or gridded data sets.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Licence</a></li><li><a href="#2">Requirements</a></li><li><a href="#3">Background</a></li><li><a href="#4">Quick Startup</a></li><li><a href="#5">Manual</a></li><li><a href="#6">References</a></li><li><a href="#7">See Also</a></li></ul></div><h2 id="1">Licence</h2><p>The code is provided as Open Source code (issued under a GNU General Public License).</p><h2 id="2">Requirements</h2><p>ModelUI is written in Matlab&#8482; and requires v2016b, or later. In addition, ModelUI requires both the <a href="matlab:doc('dstoolbox')">dstoolbox</a> and the <a href="matlab:doc('muitoolbox')">muitoolbox</a></p><h2 id="3">Background</h2><p>The ModelSkill App enables data to be loaded and then compared on a Taylor diagram. This form of plot was originally proposed for the comparison of model timeseries output (Taylor, 2001) and has subsequently been adapted for the comparison of morphological model outputs (Bosboom and Reniers, 2014; Bosboom et al., 2014). In this implementation the Taylor approach is used but modified in line with the mehtod proposed by Bosboom for the analysis of grid and mesh data. The options include the ability to create and add points to a Taylor diagram, output the results to the Clipboard, and estimate global and local skill scores.</p><h2 id="4">Quick Startup</h2><pre>Quick Guide to setting up a new project
 File&gt;New
-   To create a new project space.</pre><pre>Setup&gt;Input Data&gt;Grid/Mesh Data
+   To create a new project space.</pre><pre>Setup&gt;Input Data&gt;Gridded Data&gt;Load
    Load grids to be examined. Cases loaded are displayed on the Scenarios tab and the input files
    used can be seen on the Inputs tab.
-Setup&gt;Input Data&gt;Regrid Data
-   Allows grid to be interpolated onto the same grid used by other data sets or a user defined
-   grid.
 OR
-Setup&gt;Input Data&gt;Timeseries
+Setup&gt;Input Data&gt;Timeseries&gt;Load
    Load timesereis data sets to be examined. Cases loaded are displayed on the Scenarios tab
-   and the input files used can be seen on the Inputs tab.</pre><pre>Setup&gt;Run Parameters
-   Define grid dimensions for use in Regrid and parameters to be used in the skill score
-   see Manual for details.</pre><pre>File&gt;Save as
+   and the input files used can be seen on the Inputs tab.</pre><pre>Setup&gt;Grid Parameters
+   Define grid dimensions for use in when changing the gird dimensions using ReGrid</pre><pre>Setup&gt;run Parameters
+   Define the parameters to be used in the skill score - see Manual for details.</pre><pre>File&gt;Save as
    Save model setup to a *.mat file.</pre><pre>Run&gt;Taylor Diagram
    Generates a Taylor diagram for selected Reference and Test data sets. Multiple data sets can
-   be added. Tabulates skill score and results can be copied to clipboard.
-Run&gt;User Tools
-   Access to a set of bespoke tools for analysing tidal inlets and estuaries to compute, tabulat
-   and plot gross properties, hypsometry and network properties.
-Run&gt;Dereive output
+   be added. Tabulates skill score and results can be copied to clipboard.</pre><pre>Run&gt;Derive output
    Manipulate data using external functions of Matlab functions to
    created new datasets.</pre><pre>Plot&gt;Plot Menu
-   Access standard plotting UI for 2d and 3d plotting options.</pre><p>Scenarios are listed based on the user descriptions on the Scenarios tab.</p><h2 id="7">Manual</h2><p>The <a href="matlab:open_manual">manual</a> provides further details of setup and configuration of the model. The files for the example use case can be found in the example folder <a href="matlab:example_folder">here</a>.</p><h2 id="8">See Also</h2><p><a href="matlab:doc('muitoolbox')">muitoolbox</a>, <a href="matlab:doc('dstoolbox')">dstoolbox</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+   Access standard plotting UI for 2d and 3d plotting options.</pre><p>Model runs are listed based on the user descriptions on the Cases tab.</p><h2 id="5">Manual</h2><p>The <a href="matlab:open_manual">manual</a> provides further details of setup and configuration of the model. The files for the example use case can be found in the example folder <a href="matlab:example_folder">here</a>.</p><h2 id="6">References</h2><p>Bosboom J and Reniers A, 2018, The Deceptive Simplicity of the Brier Skill Score, In: Handbook of Coastal and Ocean Engineering, Series, pp. 1639-1663.</p><p>Bosboom J and Reniers A J H M, 2014, Scale-selective validation of morphodynamic models, 34th International Conference on Coastal Engineering, pp. 1911&#8211;1920, Seoul, South-Korea.</p><p>Bosboom J, Reniers A J H M and Luijendijk A P, 2014, On the perception of morphodynamic model skill. Coastal Engineering, 94, 112-125, <a href="https://doi.org/10.1016/j.coastaleng.2014.08.008">https://doi.org/10.1016/j.coastaleng.2014.08.008</a>.</p><p>Taylor K E, 2001, Summarizing multiple aspects of model performance in a single diagram. Journal of Geophysical Research - Atmospheres, 106 (D7), 7183-7192, 10.1029/2000JD900719.</p><h2 id="7">See Also</h2><p><a href="matlab:doc('muitoolbox')">muitoolbox</a>, <a href="matlab:doc('dstoolbox')">dstoolbox</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% ModelSkill
 % Matlab App for exploring the skill score between timeseries data sets or
@@ -106,54 +99,64 @@ Run&gt;Dereive output
 % <matlab:doc('muitoolbox') muitoolbox>
 
 %% Background
+% The ModelSkill App enables data to be loaded and then compared on a 
+% Taylor diagram. This form of plot was originally proposed for the 
+% comparison of model timeseries output (Taylor, 2001) and has subsequently
+% been adapted for the comparison of morphological model outputs 
+% (Bosboom and Reniers, 2014; Bosboom et al., 2014). In this implementation
+% the Taylor approach is used but modified in line with the mehtod proposed by 
+% Bosboom for the analysis of grid and mesh data. The options include the 
+% ability to create and add points to a Taylor diagram, output the results 
+% to the Clipboard, and estimate global and local skill scores.
 
-%% ModelSkill classes
-% *ModelSkill* - defines the behaviour of the main UI.
-
-%% ModelSkill functions
-% Compare data sets (timeseries or gridded data) using Taylor diagram 
-% and skill score.
-%%	
+%% Quick Startup
 %  Quick Guide to setting up a new project
 %  File>New 
 %     To create a new project space.
 % 	
-%  Setup>Input Data>Grid/Mesh Data
+%  Setup>Input Data>Gridded Data>Load
 %     Load grids to be examined. Cases loaded are displayed on the Scenarios tab and the input files
 %     used can be seen on the Inputs tab.
-%  Setup>Input Data>Regrid Data
-%     Allows grid to be interpolated onto the same grid used by other data sets or a user defined
-%     grid.
 %  OR
-%  Setup>Input Data>Timeseries
+%  Setup>Input Data>Timeseries>Load
 %     Load timesereis data sets to be examined. Cases loaded are displayed on the Scenarios tab
 %     and the input files used can be seen on the Inputs tab.	
 % 
-%  Setup>Run Parameters
-%     Define grid dimensions for use in Regrid and parameters to be used in the skill score
-%     see Manual for details.
-% 	
+%  Setup>Grid Parameters
+%     Define grid dimensions for use in when changing the gird dimensions using ReGrid
+% 
+%  Setup>run Parameters
+%     Define the parameters to be used in the skill score - see Manual for details.
+%     
 %  File>Save as
 %     Save model setup to a *.mat file.
 % 	
 %  Run>Taylor Diagram
 %     Generates a Taylor diagram for selected Reference and Test data sets. Multiple data sets can
 %     be added. Tabulates skill score and results can be copied to clipboard.
-%  Run>User Tools
-%     Access to a set of bespoke tools for analysing tidal inlets and estuaries to compute, tabulat
-%     and plot gross properties, hypsometry and network properties.
-%  Run>Dereive output
+%
+%  Run>Derive output
 %     Manipulate data using external functions of Matlab functions to
 %     created new datasets.
 % 	
 %  Plot>Plot Menu
 %     Access standard plotting UI for 2d and 3d plotting options.
 % 	
-% Scenarios are listed based on the user descriptions on the Scenarios tab.
+% Model runs are listed based on the user descriptions on the Cases tab.
+
 %% Manual
 % The <matlab:open_manual manual> provides further details of setup and 
 % configuration of the model. The files for the example use case can be found in
 % the example folder <matlab:example_folder here>. 
+
+%% References
+% Bosboom J and Reniers A, 2018, The Deceptive Simplicity of the Brier Skill Score, In: Handbook of Coastal and Ocean Engineering, Series, pp. 1639-1663.
+%
+% Bosboom J and Reniers A J H M, 2014, Scale-selective validation of morphodynamic models, 34th International Conference on Coastal Engineering, pp. 1911–1920, Seoul, South-Korea.
+%
+% Bosboom J, Reniers A J H M and Luijendijk A P, 2014, On the perception of morphodynamic model skill. Coastal Engineering, 94, 112-125, https://doi.org/10.1016/j.coastaleng.2014.08.008.
+%
+% Taylor K E, 2001, Summarizing multiple aspects of model performance in a single diagram. Journal of Geophysical Research - Atmospheres, 106 (D7), 7183-7192, 10.1029/2000JD900719.
 
 %% See Also
 % <matlab:doc('muitoolbox') muitoolbox>, <matlab:doc('dstoolbox') dstoolbox>.

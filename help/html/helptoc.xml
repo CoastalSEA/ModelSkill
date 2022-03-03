@@ -20,11 +20,18 @@
         <!-- Inside category, list its functions alphabetically -->
 
         <!-- User Guide comes next -->
-        <tocitem target="modelskill_guide.html" 
+        <tocitem target="modelskill_user_guide.html" 
             image="HelpIcon.USER_GUIDE">ModelSkill User Guide
             <tocitem target="modelskill_menus.html">Menu options</tocitem>    
             <tocitem target="modelskill_tabs.html">Tab options</tocitem>    
             <tocitem target="modelskill_examples.html">ModelSkill examples</tocitem>  
+        </tocitem>
+        <!-- Developers Guide comes next -->
+        <tocitem target="modelskill_dev_guide.html"
+            image="HelpIcon.USER_GUIDE">ModelSkill Developers Guide
+            <tocitem target="modelskill_class_fcns.html">ModelSkill classes and functions</tocitem>
+            <tocitem target="grid_class_fcns.html">Grid classes and functions</tocitem>
+            <tocitem target="gdinterface.html">GDinterface abstract class</tocitem>
         </tocitem>
     </tocitem>    
         <!-- Optional List of Examples, with hyperlinks to examples in other files -->
