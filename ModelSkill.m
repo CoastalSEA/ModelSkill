@@ -112,8 +112,10 @@ classdef ModelSkill < muiModelUI
             % submenu for Gridded and Timeseries Data 
             nitems = 2;
             for j=1:nitems  %add standard submenu to all import menu items
-                menu.Setup(j+2).List = {'Load','Add','Delete','Quality Control'};
-                menu.Setup(j+2).Callback = repmat({@obj.loadMenuOptions},[1,4]);
+                menu.Setup(j+2).List = {'Load','Add','Delete',...
+                                   'Quality Control','Edit Grid Position'};
+                menu.Setup(j+2).Callback = [repmat({@obj.loadMenuOptions},[1,4]),...
+                                                   {@obj.gridMenuOptions}];
             end
             % submenu for Grid Tools
             menu.Setup(5).List = {'Translate Grid','Rotate Grid',...
