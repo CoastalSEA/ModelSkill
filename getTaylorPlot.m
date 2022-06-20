@@ -23,7 +23,7 @@ function obj = getTaylorPlot(mobj)
 %--------------------------------------------------------------------------
 %
     obj = []; %dummy value for use in DataManip    
-    gridrecs = find(strcmp(mobj.Cases.Catalogue.CaseClass,'MS_GridData'));
+    gridrecs = find(strcmp(mobj.Cases.Catalogue.CaseClass,'GD_ImportData'));
     tsrecs = find(strcmp(mobj.Cases.Catalogue.CaseClass,'muiUserData'));
     if ~isempty(gridrecs) && ~isempty(tsrecs)
         answer = questdlg('Select data type','Taylor','Grid','Timeseries','Grid');       
@@ -86,13 +86,13 @@ function [grid,casedesc,ok] = grid_selection(mobj,promptxt)
     grid = []; casedesc = {''};
     
     [caserec,ok] = selectRecord(mobj.Cases,'PromptText',promptxt,...
-                         'CaseClass',{'MS_GridData'},'ListSize',[200,200]);                                                                                   
+                         'CaseClass',{'GD_ImportData'},'ListSize',[200,200]);                                                                                   
     if ok<1, return; end
 
-    [grid,timetxt,caserec,~] = MS_GridData.getCaseGridData(mobj.Cases,caserec);
+    obj = getCase(mobj.Cases,caserec);
+    grid = getGrid(obj);
     %retrieve description from Results Case
-    casedesc = mobj.Cases.Catalogue.CaseDescription(caserec);
-    casedesc = {sprintf('%s at %s',casedesc,timetxt)};
+    casedesc = {sprintf('%s at %s',grid.desc,char(grid.t))};
 end
 %%
 function [skill,ok] = getSkillParameters(mobj,x,y)
