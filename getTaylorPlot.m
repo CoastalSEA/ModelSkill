@@ -91,8 +91,12 @@ function [grid,casedesc,ok] = grid_selection(mobj,promptxt)
 
     obj = getCase(mobj.Cases,caserec);
     grid = getGrid(obj);
-    %retrieve description from Results Case
-    casedesc = {sprintf('%s at %s',grid.desc,char(grid.t))};
+    if isempty(grid)
+        ok = 0; %user cancels when selecting grid
+    else 
+        %retrieve description from Results Case
+        casedesc = {sprintf('%s at %s',grid.desc,char(grid.t))};
+    end 
 end
 %%
 function [skill,ok] = getSkillParameters(mobj,x,y)

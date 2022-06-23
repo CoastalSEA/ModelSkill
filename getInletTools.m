@@ -26,40 +26,110 @@ function getInletTools(mobj)
 % CoastalSEA (c) Mar 2022
 %--------------------------------------------------------------------------
 %
-    usertools = {'Add Properties','Delete Properties','Tabulate Properties',...
-                 'Plot Properties','Plot Hypsometry','Plot X-Y property sets'};
-   [selection,ok] = listdlg('Liststring',usertools,...
-                                 'PromptString','Select tool:',...  
-                                 'ListSize',[180,100],...
-                                 'SelectionMode','single');
-    if ok==0, return; end  %user cancelled selection
-    src.Text = usertools{selection};
-    gridclasses = {'GD_ImportData'}; %add other classes if needed
-    
-    
-    switch src.Text
-        case 'Add Properties'
-            GD_ImportData.gridMenuOptions(mobj,src,gridclasses);
-%             addFormProperties(obj,muicat); 
-        case 'Delete Properties'
-            GD_ImportData.gridMenuOptions(mobj,src,gridclasses);
-%             delFormProperties(obj,muicat);      
-        case 'Tabulate Properties'
-            getGrossPropsTable(mobj,true);
-        case 'Plot Properties'
-            getPropsPlot(mobj);
-        case 'Plot Hypsometry'
-            getHypsPlot(mobj);
-        case 'Plot X-Y property sets'
-            getXYPlot(mobj)
+    ok = 1;
+    while ok>0
+        usertools = {'Add Properties','Delete Properties','Plot Case Properties','Tabulate Set Properties',...
+                     'Plot Set Properties','Plot Hypsometry','Plot X-Y property sets'};
+       [selection,ok] = listdlg('Liststring',usertools,...
+                                     'PromptString','Select tool (Cancel to Quit):',...  
+                                     'ListSize',[180,100],...
+                                     'SelectionMode','single');
+        if ok==0, continue; end  %user cancelled selection
+        src.Text = usertools{selection};
+        gridclasses = {'GD_ImportData'}; %add other classes if needed
+
+        switch src.Text
+            case 'Add Properties'
+                GD_ImportData.gridMenuOptions(mobj,src,gridclasses);
+            case 'Delete Properties'
+                GD_ImportData.gridMenuOptions(mobj,src,gridclasses);
+            case 'Plot Case Properties'
+                getCasePropsFigure(mobj);
+                ok = 0; %quit usertools selection to allow access to figure UI
+            case 'Tabulate Set Properties'
+                getGrossPropsTable(mobj,true);
+            case 'Plot Set Properties'
+                getPropsPlot(mobj);
+            case 'Plot Hypsometry'
+                getHypsPlot(mobj);
+            case 'Plot X-Y property sets'
+                getXYPlot(mobj)
+        end
     end
+end
+%%
+function getCasePropsFigure(mobj)
+    %create figure for cf_section plot output as used in ChannelForm model
+    hf = figure('Name','Gross properties', ...
+                'Units','normalized', ...
+                'Resize','on','HandleVisibility','on', ...
+                'Tag','PlotFig');
+    hf.MenuBar = 'none';   %remove menu bar
+    hf.ToolBar = 'figure'; %allow access to data tips and save tools        
+
+    gridclasses = {'GD_ImportData'}; %add other classes if needed
+    promptxt = {'Select Case to plot:','Select timestep:'};
+
+   [cobj,~,irec] = selectCaseDatasetRow(mobj.Cases,[],...
+                                                 gridclasses,promptxt,1);
+    %generate table and plot for display on Properties tab
+    if ~isfield(cobj.Data,'GrossProps') || isempty(cobj.Data.GrossProps)
+        getdialog('No Form Properties available for selected grid')
+        return;
+    end
+    T = getDSTable(cobj.Data.GrossProps,irec,[]);
+    
+    %generate table of gross properties
+    uitable('Parent',hf,'Data',T.DataTable{:,:},...
+            'ColumnName',T.VariableNames,...
+            'ColumnWidth',{80},...
+            'RowName',T.DataTable.Properties.RowNames,...
+            'Units','Normalized','Position',[0.05,0.84,0.9,0.14],...
+            'Tag','grossprops');
+    %user popup to select a type of plot 
+    popup = findobj(hf,'Style','popup');
+    if isempty(popup)
+        plotlist = {'Hypsommetry','Cross-sections','Thalweg + Plan width',...
+                'Form width','Cross-sectional area','Hydraulic depth',...
+                'Area-Prism ratio','Prism','Elevation-Area histogram',...
+                'a/h and Vs/Vc','Hydraulics','Transgression'};    
+        uicontrol('Parent',hf,'Style','text',...
+           'Units','Normalized','Position', [0.05 0.79 0.1 0.04],...
+           'String', 'Select plot:');  
+        popup = uicontrol('Parent',hf,'Style','popup',...
+           'String',plotlist,'Tag','PlotList',...
+           'Units','Normalized','Position', [0.05 0.74 0.9 0.05],...
+           'Callback', @(src,evdat)gd_property_plots(cobj,irec,src)); %#ok<NASGU>
+
+        %Create push button to copy data to clipboard
+        uicontrol('Parent',hf,'Style','pushbutton',...                    
+            'String','>Table','UserData',T,'Tag','CopyButton',...
+            'TooltipString','Copy grossproperties table to clipboard',...
+            'Units','normalized','Position',[0.75 0.793 0.10 0.044],...                    
+            'Callback',@copydata2clip);  
+        
+        %create push button to create tab plot as a stand alone figure
+        uicontrol('Parent',hf,'Style','pushbutton',...                    
+            'String','>Figure','Tag','FigButton',...
+            'TooltipString','Create plot as stand alone figure',...
+            'Units','normalized','Position',[0.86 0.793 0.10 0.044],...                    
+            'Callback',@(src,evdat)gd_property_plots(cobj,irec,src));  
+        
+    else
+        %update obj in Callbacks and table in UserData
+        popup.Callback = @(src,evdat)gd_property_plots(cobj,irec,src);
+        hb = findobj(hf,'Tag','CopyButton');           
+        hb.UserData = T;
+        hf = findobj(hf,'Tag','FigButton');
+        hf.Callback = @(src,evdat)gd_property_plots(cobj,irec,src);
+        gd_property_plots(cobj,irec,popup); %set plot to current popup selection
+    end               
 end
 %%
 function tabledata = getGrossPropsTable(mobj,istab)
     %tabulate the gross properties in a figure
-%     rN = 15; %No. of rows in the gross properties struct
     muicat = mobj.Cases;
-    promptxt = 'Select a Model:';
+    promptxt = 'Select a Model (Cancel to Quit):';
     [caserec,ok] = selectCase(muicat,promptxt,'single',0);     
     if ok<1, tabledata = []; return; end
     
@@ -102,7 +172,7 @@ function getPropsPlot(mobj)
                 ylabel(tabledata.VariableLabels{varnum});
             end
             
-            answer = questdlg('Add another dataset?','Plot properties','Yes');
+            answer = questdlg('Add another dataset?','Plot properties','Yes','No','Yes');
             if strcmp(answer,'No')
                 select = 0;
                 legend
@@ -206,7 +276,7 @@ function getXYPlot(mobj)
                 txtlabel = ['\leftarrow ',char(string(xpts(end)))];
                 text(dataX(end),dataY(end),txtlabel,'FontSize',8);
             end
-            answer = questdlg('Add another dataset?','Plot properties','Yes');
+            answer = questdlg('Add another dataset?','Plot properties','Yes','No','Yes');
             if strcmp(answer,'No')
                 select = 0;
                 legend
