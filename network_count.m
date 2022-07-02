@@ -2,6 +2,12 @@ function network_count(bathy,options,casevars)
     %Extract channels from a bathymetry and perform some network analysis
     %function derived from GeoNet_phd_coundtin_channels_Ian.m provided by
     %Barend van Maanen (Apr 2020)
+    %
+    %Reference: Sangireddy et al, 2016, GeoNet: An open source software for
+    %the automatic and objective extraction of channel heads, channel 
+    %network, and channel morphology from high resolution topography data, 
+    %Environmental Modeling and Software, 83, 58-73, doi:10.1016/j.envsoft.2016.04.026.
+    %
     % bathy_0 - an m x n array of elevations of the bathymetry to be analysed
     % tr - the tidal range (m)
     % options - struct to define analysis parameters

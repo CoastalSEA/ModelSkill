@@ -112,17 +112,18 @@ classdef ModelSkill < muiModelUI
             % submenu for Gridded and Timeseries Data 
             nitems = 2;
             for j=1:nitems  %add standard submenu to all import menu items
-                menu.Setup(j+2).List = {'Load','Add','Delete',...
-                                   'Quality Control','Edit Grid Position'};
-                menu.Setup(j+2).Callback = [repmat({@obj.loadMenuOptions},[1,4]),...
-                                                   {@obj.gridMenuOptions}];
+                menu.Setup(j+2).List = {'Load','Add','Delete','Quality Control'};                                   
+                menu.Setup(j+2).Callback = repmat({@obj.loadMenuOptions},[1,4]);
             end
             % submenu for Grid Tools
             menu.Setup(5).List = {'Translate Grid','Rotate Grid',...
                                   'Re-Grid','Sub-Grid',...
-                                  'Combine Grids','Export xyz Grid'};                                                        
-            menu.Setup(5).Callback = repmat({@obj.gridMenuOptions},[1,6]);
-            menu.Setup(5).Separator = [repmat({'off'},[1,5]),{'on'}];             
+                                  'Combine Grids','Add Surface',...
+                                  'To curvilinear','From curvilinear',... 
+                                  'Difference Plot','Export xyz Grid'};                                                                        
+            menu.Setup(5).Callback = repmat({@obj.gridMenuOptions},[1,10]);
+            menu.Setup(5).Separator = [repmat({'off'},[1,6]),...
+                                              {'on','off','on','on'}]; %separator preceeds item           
             
             %% Run menu ---------------------------------------------------
             menu.Run(1).List = {'Taylor Diagram','Inlet Tools','User Tools','Derive Output'};

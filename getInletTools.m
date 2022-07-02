@@ -28,11 +28,14 @@ function getInletTools(mobj)
 %
     ok = 1;
     while ok>0
-        usertools = {'Add Properties','Delete Properties','Plot Case Properties','Tabulate Set Properties',...
-                     'Plot Set Properties','Plot Hypsometry','Plot X-Y property sets'};
+        usertools = {'Add Properties','Delete Properties',...
+                     'Edit Inlet Definition','Plot Case Properties',...
+                     'Tabulate Set Properties','Plot Set Properties',...
+                     'Plot Hypsometries','Plot X-Y property sets',...
+                     'Plot Thalwegs'};
        [selection,ok] = listdlg('Liststring',usertools,...
                                      'PromptString','Select tool (Cancel to Quit):',...  
-                                     'ListSize',[180,100],...
+                                     'ListSize',[180,140],...
                                      'SelectionMode','single');
         if ok==0, continue; end  %user cancelled selection
         src.Text = usertools{selection};
@@ -46,14 +49,18 @@ function getInletTools(mobj)
             case 'Plot Case Properties'
                 getCasePropsFigure(mobj);
                 ok = 0; %quit usertools selection to allow access to figure UI
+            case 'Edit Inlet Definition'
+                GD_ImportData.gridMenuOptions(mobj,src,{'GD_ImportData'});
             case 'Tabulate Set Properties'
                 getGrossPropsTable(mobj,true);
             case 'Plot Set Properties'
                 getPropsPlot(mobj);
-            case 'Plot Hypsometry'
+            case 'Plot Hypsometries'
                 getHypsPlot(mobj);
             case 'Plot X-Y property sets'
-                getXYPlot(mobj)
+                getXYPlot(mobj);
+            case 'Plot Thalwegs'
+                getThalwegs(mobj);
         end
     end
 end
@@ -62,7 +69,6 @@ function getCasePropsFigure(mobj)
     %create figure for cf_section plot output as used in ChannelForm model
     hf = figure('Name','Gross properties', ...
                 'Units','normalized', ...
-                'Resize','on','HandleVisibility','on', ...
                 'Tag','PlotFig');
     hf.MenuBar = 'none';   %remove menu bar
     hf.ToolBar = 'figure'; %allow access to data tips and save tools        
@@ -155,7 +161,6 @@ function getPropsPlot(mobj)
     %plot gross properties from groups of results
     hf = figure('Name','Gross properties', ...
                 'Units','normalized', ...
-                'Resize','on','HandleVisibility','on', ...
                 'Tag','PlotFig');
     ax = axes(hf);
     hold on
@@ -190,7 +195,6 @@ function getHypsPlot(mobj)
     %plot the grid hypsometry
     hf = figure('Name','Gross properties', ...
                 'Units','normalized', ...
-                'Resize','on','HandleVisibility','on', ...
                 'Tag','PlotFig');
     ax = axes(hf);
     hold on
@@ -239,7 +243,6 @@ function getXYPlot(mobj)
     %plot gross properties from groups of results
     hf = figure('Name','Gross properties', ...
                 'Units','normalized', ...
-                'Resize','on','HandleVisibility','on', ...
                 'Tag','PlotFig');
     ax = axes(hf);
     hold on
@@ -288,6 +291,95 @@ function getXYPlot(mobj)
         end
     end
     hold off    
+end
+%%
+function getThalwegs(mobj)
+    %plot the thalwegs (deepest point in channel) between user defined
+    %start and end points
+    gridclasses = {'GD_ImportData'}; %add other classes if needed
+    promptxt1 = {'Select Case to plot (Cancel to quit):','Select timestep:'};
+    [obj,~,irec] = selectCaseDatasetRow(mobj.Cases,[],...
+                                                 gridclasses,promptxt1,1);
+    if isempty(obj), return; end  %user cancelled
+    desc = sprintf('%s at %s',obj.Data.Form.Description,char(obj.Data.Form.RowNames(irec)));
+    grid = getGrid(obj,irec);   %grid for selected year
+    [X,Y] = meshgrid(grid.x,grid.y);
+    N = numel(X);
+    xy = [reshape(X,[N,1]),reshape(Y,[N,1])];
+    Z = grid.z';
+    
+    %get maximum water level to define 
+    promptxt2 = {'Maximum water level?','Depth exponent'};
+    defaults = {num2str(max(Z,[],'all')),'2'};
+    answer = inputdlg(promptxt2,'Water level',1,defaults);
+    if isempty(answer), return; end %user cancelled
+    maxwl = str2double(answer{1});
+    dexp = str2double(answer{2});
+
+    %accessible map (water) and use -Z as the cost map
+    water = true(size(Z));
+    water(isnan(Z) | Z>maxwl) = false;
+ 
+    %cline = gd_selectpoints(grid,true);     
+    promptxt3 = {'Select start of path','Select end of path'};
+    gridmasked = grid;        gridmasked.z(~water') = NaN;
+    points = gd_selectpoints(gridmasked,2,promptxt3,true);
+    if any(isnan(points.x)), return; end
+    
+    %index of nearest grid point to selected start end end points    
+    start = dsearchn(xy,[points.x(1),points.y(1)]); 
+    goal = dsearchn(xy,[points.x(2),points.y(2)]);
+    
+    %find the shortest path taking account of the cost (depths)
+    %Z(Z>maxwl) = 0;
+    costfnc = @(z) -(min(z,[],'all')-z).^dexp; %weighted inverse depth to favour staying deep
+    thalweg = a_star(water, costfnc(Z), start, goal);
+    [idy,idx] = ind2sub(size(Z),thalweg);
+    
+    %plot base map of initial grid selection and defined mask
+    hf = figure('Name','Thalwegs','Units','normalized','Tag','PlotFig');                            
+    ax = gd_plotgrid(hf,grid);
+    lines = {'-','--',':','-.'};
+    
+    hs = findobj(ax.Children,'Type','surface');
+    hs.Annotation.LegendInformation.IconDisplayStyle = 'off';
+    hold on
+    hp = plot(ax,points.x,points.y,'ok','MarkerSize',8,'MarkerFaceColor','w','Tag','mypoints');
+    hp.Annotation.LegendInformation.IconDisplayStyle = 'off';  
+    plot(ax,grid.x(idx),grid.y(idy),'r','LineStyle',lines{1},'DisplayName',desc);
+    hold off
+    title('Thalwegs between defined start and end points')
+    legend
+    
+    select = 1; count = 2;
+    while select>0
+        [obj,~,irec] = selectCaseDatasetRow(mobj.Cases,[],...
+                                                 gridclasses,promptxt1,1);                                            
+        if isempty(obj)
+            select = 0;   %user cancelled
+        else
+            desc = sprintf('%s at %s',obj.Data.Form.Description,char(obj.Data.Form.RowNames(irec))); 
+            grid = getGrid(obj,irec);   %grid for selected year
+            Z = grid.z';
+            %update water mask to reflect new grid
+            water = true(size(Z));
+            water(isnan(Z) | Z>maxwl) = false;            
+            %find the shortest path taking account of the cost (depths)
+            %Z(Z>maxwl) = 0;
+            thalweg = a_star(water, costfnc(Z), start, goal);
+            if isempty(thalweg)
+                hw = warndlg(sprintf('No path found for %s',desc));
+                uiwait(hw)
+                continue;
+            end
+            [idy,idx] = ind2sub(size(Z),thalweg);
+            hold on
+            plot(ax,grid.x(idx),grid.y(idy),'r','LineStyle',...
+                                lines{rem(count,4)},'DisplayName',desc);
+            hold off 
+            count = count+1;
+        end                                       
+    end
 end
 %%
 function [tabledata,varnum,ok] = selectPlotData(mobj)
