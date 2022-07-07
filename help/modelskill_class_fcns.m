@@ -8,19 +8,20 @@
 % calculation.
 
 %% ModelSkill functions
-% Compare data sets (timeseries or gridded data) using Taylor diagram 
-% and skill score.
+% Functions to analyse univariate timeseries, or gridded data, using a Taylor diagram, 
+% skill score and network analysis, along with toold to analyse the gross 
+% properties (volume, area, width, etc) of inlets or channels 
 %%
-% * *getTaylorPlot* - 
-% - 
-% * *getInletTools* - 
-
-% * *getUserTools* - 
-% - 
+% * *example/demo_format*
+% – used to set up import format and metadata description of timeseries variables. 
+% * *getTaylorPlot* 
+% - calls the taylor_plot function with either gridded or timeseries data.
+% * *getInletTools* 
+% - tools to extract and plot morphological properties of inlets and channels.
+% * *getUserTools* 
+% - user functions to do additional analysis on data loaded in ModelSkill. 
 % * *network_count*
-% - 
-
-
+% - extract channels from a bathymetry and perform some network analysis.
 
 %% Grid Classes
 % Classes used to manipulate cartesian grids can be found in the
