@@ -32,7 +32,7 @@ function getInletTools(mobj)
                      'Edit Inlet Definition','Plot Case Properties',...
                      'Tabulate Set Properties','Plot Set Properties',...
                      'Plot Hypsometries','Plot X-Y property sets',...
-                     'Plot Thalwegs'};
+                     'Plot Thalwegs','User Function'};
        [selection,ok] = listdlg('Liststring',usertools,...
                                      'PromptString','Select tool (Cancel to Quit):',...  
                                      'ListSize',[180,140],...
@@ -61,6 +61,8 @@ function getInletTools(mobj)
                 getXYPlot(mobj);
             case 'Plot Thalwegs'
                 getThalwegs(mobj);
+            case 'User Function'
+                ms_userfunction(mobj);
         end
     end
 end
@@ -93,12 +95,12 @@ function getCasePropsFigure(mobj)
             'Units','Normalized','Position',[0.05,0.84,0.9,0.14],...
             'Tag','grossprops');
     %user popup to select a type of plot 
-    popup = findobj(hf,'Style','popup');
+    popup = findobj(hf,'Style','popup','Tag','PlotList');
     if isempty(popup)
         plotlist = {'Hypsommetry','Cross-sections','Thalweg + Plan width',...
-                'Form width','Cross-sectional area','Hydraulic depth',...
-                'Area-Prism ratio','Prism','Elevation-Area histogram',...
-                'a/h and Vs/Vc','Hydraulics','Transgression'};    
+                    'Along-channel properties','Hydraulic depth',...
+                    'Prism-Area ratio','Elevation-Area histogram',...
+                    'a/h and Vs/Vc','Hydraulics','Transgression'};    
         uicontrol('Parent',hf,'Style','text',...
            'Units','Normalized','Position', [0.05 0.79 0.1 0.04],...
            'String', 'Select plot:');  
@@ -258,6 +260,7 @@ function getXYPlot(mobj)
             if height(tabledataX)~=height(tabledataY)
                 warndlg('Selected data are not the same length')
                 select = 0;
+                continue;
             end
             
             if count==1
@@ -268,7 +271,7 @@ function getXYPlot(mobj)
             if strcmp(xname,yname)
                 metatxt = xname;
             else
-                metatxt = springtf('%s-%s',xname,yname);
+                metatxt = sprintf('%s-%s',xname,yname);
             end
             
             plot(ax,dataX,dataY,'LineWidth',1,'DisplayName',metatxt);
