@@ -61,7 +61,9 @@ function hyps = ms_userfunction(mobj)
     end  
 
     ps = gd_section_properties(grid,wl,hdst);
-    fprintf('prA = %.2e; prV = %.2e; vpr =  %.2e;\n',ps.PrA(1),ps.PrV(1),Pr(1))
+    delx = abs(grid.x(2)-grid.x(1));
+    ixM = floor(grid.xM/(delx))+1;
+    fprintf('prA = %.2e; prV = %.2e; vpr =  %.2e;\n',ps.PrA(ixM),ps.PrV(ixM),Pr(ixM))
     
     figure; 
     subplot(2,1,1)

@@ -30,12 +30,13 @@ function getInletTools(mobj)
     while ok>0
         usertools = {'Add Properties','Delete Properties',...
                      'Edit Inlet Definition','Plot Case Properties',...
-                     'Tabulate Set Properties','Plot Set Properties',...
-                     'Plot Hypsometries','Plot X-Y property sets',...
+                     'Tabulate Set Properties, f(t)','Plot Set Properties, f(t)',...
+                     'Plot Hypsometries','Plot X-Y property sets, f(t)',...
+                     'Plot rates of change, f(t)',...
                      'Plot Thalwegs','User Function'};
        [selection,ok] = listdlg('Liststring',usertools,...
                                      'PromptString','Select tool (Cancel to Quit):',...  
-                                     'ListSize',[180,140],...
+                                     'ListSize',[180,160],...
                                      'SelectionMode','single');
         if ok==0, continue; end  %user cancelled selection
         src.Text = usertools{selection};
@@ -51,14 +52,16 @@ function getInletTools(mobj)
                 ok = 0; %quit usertools selection to allow access to figure UI
             case 'Edit Inlet Definition'
                 GD_ImportData.gridMenuOptions(mobj,src,{'GD_ImportData'});
-            case 'Tabulate Set Properties'
+            case 'Tabulate Set Properties, f(t)'
                 getGrossPropsTable(mobj,true);
-            case 'Plot Set Properties'
+            case 'Plot Set Properties, f(t)'
                 getPropsPlot(mobj);
             case 'Plot Hypsometries'
                 getHypsPlot(mobj);
-            case 'Plot X-Y property sets'
+            case 'Plot X-Y property sets, f(t)'
                 getXYPlot(mobj);
+            case 'Plot rates of change, f(t)'
+                getRatesPlot(mobj);
             case 'Plot Thalwegs'
                 getThalwegs(mobj);
             case 'User Function'
@@ -165,27 +168,24 @@ function getPropsPlot(mobj)
                 'Units','normalized', ...
                 'Tag','PlotFig');
     ax = axes(hf);
+    lines = {'-','--',':','-.'};
+    
     hold on
-    select = 1; count = 1;
+    select = 1; count = 0;
     while select>0
         [tabledata,varnum,ok] = selectPlotData(mobj);
         if ok~=0
             data = tabledata.DataTable{:,varnum};
             x = tabledata.RowNames;            
             legtext = inputdlg('Legend text','Plot properties',1,{num2str(count)});
-            plot(ax,x,data,'LineWidth',1,'DisplayName',legtext{1});
-            if count==1
+            plot(ax,x,data,'LineStyle',lines{rem(count,4)+1},...
+                                'LineWidth',1,'DisplayName',legtext{1});
+            if count==0
                 xlabel('Time step (years)')
                 ylabel(tabledata.VariableLabels{varnum});
             end
             
-            answer = questdlg('Add another dataset?','Plot properties','Yes','No','Yes');
-            if strcmp(answer,'No')
-                select = 0;
-                legend
-            else
-                count = count+1;
-            end
+            [select,count] = addAnotherDataset(count);
         else
             select = 0;
         end
@@ -215,18 +215,18 @@ function getHypsPlot(mobj)
             zvol = hyps.Volume;
             casedesc = cobj.Data.Form.Description;
             labs = sprintf('%s Area at %s',casedesc,hyps.Properties.RowNames{1});
-            plot(zsurf,zcentre,'--','DisplayName',labs);
+            plot(ax,zsurf,zcentre,'--','DisplayName',labs);
             labv = sprintf('%s Volume at %s',casedesc,hyps.Properties.RowNames{1});
-            plot(zvol,zcentre,'-.','DisplayName',labv);
+            plot(ax,zvol,zcentre,'-.','DisplayName',labv);
 
             if count==1                
                 %add water levels at mouth
                 lightgrey = [0.7,0.7,0.7];
-                h1 = plot(xlim, wl.zhw(1)*[1 1],':','Color',lightgrey);
+                h1 = plot(ax,xlim, wl.zhw(1)*[1 1],':','Color',lightgrey);
                 h1.Annotation.LegendInformation.IconDisplayStyle = 'off';  
-                h1 = plot(xlim, wl.zmt(1)*[1 1],'--','Color',lightgrey);
+                h1 = plot(ax,xlim, wl.zmt(1)*[1 1],'--','Color',lightgrey);
                 h1.Annotation.LegendInformation.IconDisplayStyle = 'off';  
-                h1 = plot(xlim, wl.zlw(1)*[1 1],':','Color',lightgrey);
+                h1 = plot(ax,xlim, wl.zlw(1)*[1 1],':','Color',lightgrey);
                 h1.Annotation.LegendInformation.IconDisplayStyle = 'off';  
             end
         else 
@@ -247,8 +247,10 @@ function getXYPlot(mobj)
                 'Units','normalized', ...
                 'Tag','PlotFig');
     ax = axes(hf);
+    lines = {'-','--',':','-.'};
+    
     hold on
-    select = 1; count = 1;
+    select = 1; count = 0;
     while select>0
         [tabledataX,varnumX,okX] = selectPlotData(mobj);
         [tabledataY,varnumY,okY] = selectPlotData(mobj);
@@ -263,7 +265,7 @@ function getXYPlot(mobj)
                 continue;
             end
             
-            if count==1
+            if count==0
                 xlabel(tabledataX.VariableLabels{varnumX});
                 ylabel(tabledataY.VariableLabels{varnumY});
             end
@@ -274,7 +276,8 @@ function getXYPlot(mobj)
                 metatxt = sprintf('%s-%s',xname,yname);
             end
             
-            plot(ax,dataX,dataY,'LineWidth',1,'DisplayName',metatxt);
+            plot(ax,dataX,dataY,'LineStyle',lines{rem(count,4)+1},...
+                       'Marker','.','LineWidth',1,'DisplayName',metatxt);
             xpts = tabledataX.RowNames;    
             if ~isempty(xpts)
                 txtlabel = ['\leftarrow ',char(string(xpts(1)))];
@@ -282,18 +285,47 @@ function getXYPlot(mobj)
                 txtlabel = ['\leftarrow ',char(string(xpts(end)))];
                 text(dataX(end),dataY(end),txtlabel,'FontSize',8);
             end
-            answer = questdlg('Add another dataset?','Plot properties','Yes','No','Yes');
-            if strcmp(answer,'No')
-                select = 0;
-                legend
-            else
-                count = count+1;
-            end
+            
+            [select,count] = addAnotherDataset(count);
         else
             select = 0;
         end
     end
     hold off    
+end
+%%
+function getRatesPlot(mobj)
+    %plot the rates of change of a selected variable
+    hf = figure('Name','Gross properties', ...
+                'Units','normalized', ...
+                'Tag','PlotFig');
+    ax = axes(hf);
+    lines = {'-','--',':','-.'};
+    
+    hold on
+    select = 1; count = 0;
+    while select>0
+        [tabledata,varnum,ok] = selectPlotData(mobj);
+        if ok~=0
+            vardata = tabledata.DataTable{:,varnum};  
+            t = tabledata.RowNames; 
+            varate = diff(vardata)./years(diff(t));
+            varate = [0;varate];          
+            legtext = inputdlg('Legend text','Plot properties',1,{num2str(count)});
+            plot(ax,t,varate,'LineStyle',lines{rem(count,4)+1},...
+                                'LineWidth',1,'DisplayName',legtext{1});
+            if count==0
+                xlabel('Time step (years)')
+                varname = tabledata.VariableDescriptions{varnum};
+                ylabel(sprintf('Rate of change of %s',varname));
+            end
+            
+            [select,count] = addAnotherDataset(count);
+        else 
+            select = 0;
+        end
+    end
+    hold off
 end
 %%
 function getThalwegs(mobj)
@@ -354,7 +386,7 @@ function getThalwegs(mobj)
     title('Thalwegs between defined start and end points')
     legend
     
-    select = 1; count = 2;
+    select = 1; count = 1;
     while select>0
         [obj,~,irec] = selectCaseDatasetRow(mobj.Cases,[],...
                                                  gridclasses,promptxt1,1);                                            
@@ -378,7 +410,7 @@ function getThalwegs(mobj)
             [idy,idx] = ind2sub(size(Z),thalweg);
             hold on
             plot(ax,grid.x(idx),grid.y(idy),'r','LineStyle',...
-                                lines{rem(count,4)},'DisplayName',desc);
+                                lines{rem(count,4)+1},'DisplayName',desc);
             hold off 
             count = count+1;
         end                                       
@@ -399,6 +431,17 @@ function [tabledata,varnum,ok] = selectPlotData(mobj)
             'PromptString',PromptText, ...
             'SelectionMode','single', ...
             'ListString',tabledata.VariableNames);  
+end
+%%
+function [select,count] = addAnotherDataset(count)
+    answer = questdlg('Add another dataset?','Plot properties','Yes','No','Yes');
+    if strcmp(answer,'No')
+        select = 0;
+        legend
+    else
+        select = 1;
+        count = count+1;
+    end
 end
 
      
