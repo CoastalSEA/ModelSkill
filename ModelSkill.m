@@ -121,10 +121,10 @@ classdef ModelSkill < muiModelUI
                                   'Combine Grids','Add Surface',...
                                   'To curvilinear','From curvilinear',... 
                                   'Display Dimensions','Difference Plot',...
-                                  'Export xyz Grid'};                                                                        
-            menu.Setup(5).Callback = repmat({@obj.gridMenuOptions},[1,11]);
+                                  'Digitise Line','Export xyz Grid'};                                                                        
+            menu.Setup(5).Callback = repmat({@obj.gridMenuOptions},[1,12]);
             menu.Setup(5).Separator = [repmat({'off'},[1,6]),...
-                                              {'on','off','on','off','on'}]; %separator preceeds item           
+                                        {'on','off','on','off','on','on'}]; %separator preceeds item           
             
             %% Run menu ---------------------------------------------------
             menu.Run(1).List = {'Taylor Diagram','Inlet Tools','User Tools','Derive Output'};

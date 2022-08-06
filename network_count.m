@@ -29,6 +29,7 @@ function network_count(bathy,options,casevars)
     %   rad_int - number of grid intervals used to generate radii
     %   grid_size - grid dimension (m)
     %   HW - high water level (m)
+    %   isplot - generates all ouput plots if true
     %   casedesc - description of selected cas 
     %
     %Perform Perona-Malik nonlinear filtering on the original data set 
@@ -51,11 +52,14 @@ function network_count(bathy,options,casevars)
 
     %Computation of the curvature on the regularized data set
     Co = curv(K,casevars.grid_size); 
-%     figure
-%     pcolor(Co)
-%     shading flat; 
-%     colorbar; 
-%     view([0 -90])
+    % if casevars.isplot  %check plot 
+    %     figure('Name','Network','Units','normalized','Tag','PlotFig');
+    %     pcolor(Co)
+    %     shading flat; 
+    %     colorbar; 
+    %     view([0 -90])
+    %     title('Curvature of the regularized data, Co')
+    % end
 
     %Computation of statistics of curvature
     [x_Co,y_Co] = size(Co); 
@@ -65,17 +69,21 @@ function network_count(bathy,options,casevars)
     jj=isnan(bathy); %bathymetry uses NaN values to represent land
     Cs_bis(jj) = NaN;
     Cs_bis = reshape(Cs_bis,x_Co,y_Co);
-    figure
-    pcolor(Cs_bis)
-    shading flat; 
-    colorbar; 
-    view([0 -90])
-    max_Co=max(max(Co));
-    min_Co=min(min(Co));
-    set(gca,'clim',[min_Co,max_Co])
+    
+    if casevars.isplot
+        figure('Name','Network','Units','normalized','Tag','PlotFig');
+        pcolor(Cs_bis)
+        shading flat; 
+        colorbar; 
+        view([0 -90])
+        max_Co=max(max(Co));
+        min_Co=min(min(Co));
+        set(gca,'clim',[min_Co,max_Co])
+        title('Curvature of the regularized data, Cs')
+    end
  
     above_high_tide=bathy>casevars.HW; %grid points above the high water level
-    bathy_channels = get_channels(Cs_bis,above_high_tide);
+    bathy_channels = get_channels(Cs_bis,above_high_tide,casevars);
     
     results = get_number_channels(bathy_channels,casevars);
     if isempty(results)
@@ -85,23 +93,26 @@ function network_count(bathy,options,casevars)
     plot_network_figures(bathy,bathy_channels,results,casevars.desc);
 end
 %%
-function channels = get_channels(Cs_bis,above_high_tide)
+function channels = get_channels(Cs_bis,above_high_tide,casevars)
     %Extract channels
     %
     %Quantile-quantile plot of curvature to set curvature threshold
-    [xx,yy,qx,qy,mx,my] = geonet_qqplot(Cs_bis(~isnan(Cs_bis)));
+    [xx,yy,qx,qy,mx,my] = geonet_qqplot(Cs_bis(~isnan(Cs_bis))); %note: nargin==1
     
     %Plotting quantile-quantile plot
     h_fig = figure;    
-    plot(xx,yy,':',qx,qy,'-o',mx,my,'-.');    
+    plot(xx,yy,':',qx,qy,'-o',mx,my,'-.');  
+    
     xlabel('Standard Normal Quantiles')
     ylabel('Quantiles of Input Sample')
     title ('QQ Plot of Sample Data versus Standard Normal')    
-
-    answer = inputdlg('Threshold','Channel extraction',1,{num2str(qx(2))});
-    if isempty(answer) %uses default value if user cancels
-        threshold_1 = qx(2); % Here you should define a threshold (potentially based on the quantile-quantile plot) 
-    else
+    
+    %define a threshold (potentially based on the quantile-quantile plot)
+    promptxt = sprintf('Define threshold to use\nDefault is 75 percentile of x (right circle)');
+    answer = inputdlg(promptxt,'Channel extraction',1,{num2str(qx(2))});
+    if isempty(answer)        %use default value if user cancels        
+        threshold_1 = qx(2);  %75 percentile value
+    else                      %apply user defined value
         threshold_1 = str2double(answer{1});
     end
     close(h_fig)
@@ -122,23 +133,34 @@ function channels = get_channels(Cs_bis,above_high_tide)
     end
 
     channels(above_high_tide)=0; % No channels above high tide
-%     figure
-%     pcolor(channels)
-%     shading flat
-%     colorbar
-%     view([0 -90])
-%     set(gca,'clim',[-1 1])
-%     title('Extracted channel network')   
+    if casevars.isplot
+        figure('Name','Network','Units','normalized','Tag','PlotFig');
+        pcolor(channels)
+        shading flat
+        colorbar
+        view([0 -90])
+        set(gca,'clim',[-1 1])
+        title('Extracted channel network')   
+    end
 end
 %%
 function results = get_number_channels(bathy_channels,casevars)
     %count the number of channels located at a specific distance from the coastal inlet
+    % results(:,1) - Distance from the coastal inlet
+    % results(:,2) - Number of channels
+    % results(:,3) - Length of the semi-circle (m)
+    
     results = [];
     cv = casevars;
     % CREATING CIRCLES AND COUNTING CHANNELS
     if cv.X_centre==0 || cv.Y_centre==0
        [cv,max_rad] = getXYcentre(bathy_channels,cv);
        if isempty(max_rad), return; end
+    else
+        [y_len, x_len] = size(bathy_channels);   
+        my_rad = y_len-cv.Y_centre-1;
+        mx_rad = min(cv.X_centre,x_len-cv.X_centre)-1;
+        max_rad = min(mx_rad,my_rad); 
     end
     
     where_i=0;
@@ -214,12 +236,16 @@ function results = get_number_channels(bathy_channels,casevars)
         results(where_i,2)=count_channels; % Number of channels
         results(where_i,3)=2*pi*radius*cv.grid_size/2; % Length of the semi-circle (m)
     end
-    figure
-    pcolor(bathy_channels)
-    shading flat
-%     colorbar
-    view([0 -90])
-    set(gca,'clim',[-1 1])    
+    %
+    if casevars.isplot
+        figure('Name','Network','Units','normalized','Tag','PlotFig');
+        pcolor(bathy_channels)
+        shading flat
+        colorbar
+        view([0 -90])
+        set(gca,'clim',[-1 1]);
+        title('Radial circles on extracted grid')
+    end
 end
 %%
 function [cv,mxr] = getXYcentre(bathy_channels,cv)
@@ -232,6 +258,7 @@ function [cv,mxr] = getXYcentre(bathy_channels,cv)
     if cv.Y_centre==0
         cv.Y_centre = round(y_len/2);
     end
+    
     %plot base figure
     figtitle = sprintf('Centre selection');
     promptxt = 'Accept centre point definition';
@@ -279,6 +306,7 @@ function [cv,mxr] = getXYcentre(bathy_channels,cv)
                 mxr = [];
                 h_but.Tag = '';
             end
+            delete(h_plt.Parent)
             ok = 1;
         end     
     end    
@@ -311,22 +339,45 @@ function plot_network_figures(bathy_0,channels,results,casedesc)
     plot(s3,results(:,1),results(:,2),'o')
     xlabel ('Distance (m)')
     ylabel ('Number of channels')
-    title('Count of channels with distance from entrance')
+    title(sprintf('Count of channels with\ndistance from entrance'))
+    [maxcount,idx] = max(results(:,2));
+    pktxt = sprintf('Peak count = %0.0f\nDistance = %0.0f',maxcount,results(idx,1));
+    offset = s3.YLim(2)-(s3.YLim(2)-s3.YLim(1))*0.1;
+    text(s3,s3.XLim(1)+1,offset,pktxt,'FontSize',8);
 
     s4 = subplot(2,2,4);
-    plot(s4,results(:,1),results(:,3)./results(:,2),'o')
+    AvDist = results(:,3)./results(:,2); %Av.drainage distance between channels (m)
+    idinf = isinf(AvDist);
+    AvDist(idinf) = [];  dist = results(~idinf,1);  %remove inf values from data
+    nend = 3;                         %number of most distant points to omit
+    plot(s4,dist(1:end-nend),AvDist(1:end-nend),'o')
     xlabel ('Distance (m)')
-    ylabel ('Channel drainage width (m)')     
-    title('Width of channels with distance from entrance')
-    
+    ylabel (sprintf('Av. drainage distance\nbetween channels (m)'))  
+    title(sprintf('Drainage distance with\ndistance from entrance'))
+    mndist = mean(AvDist(1:end-nend));
+    stdist = std(AvDist(1:end-nend));   
+    [~,b,rsq,fitx,fity,fitxt] = regression_model(dist(1:end-nend),AvDist(1:end-nend),'linear');
+    hold on
+    xlimits = s4.XLim;
+    plot(xlimits, mndist*[1 1],'--k');
+    plot(xlimits, (mndist+stdist)*[1,1],':k');
+    plot(xlimits, (mndist-stdist)*[1,1],':k');
+    plot(s4,fitx,fity,'-.r');
+    s4.XLim = xlimits;    %restore initial limits of data
+    hold off
+    offset = s4.YLim(1)+(s4.YLim(2)-s4.YLim(1))*0.1;
+    text(s4,s4.XLim(1)+1,offset,fitxt,'FontSize',8);
     sgtitle(casedesc,'FontSize',12)
     
-%     figure;
-%     plot(results(:,1),results(:,2),'--.')
-%     xlabel ('Distance (m)')
-%     ylabel ('Number of channels')
-%     legend(casedesc{1})
-%     title('Count of channels with distance from entrance')
+    %write summary statistics to the Commnad Window
+    fprintf('Count = %0.0f, Peak distance = %0.0f, Drainage stats = %0.0f (%0.0f) [%0.3f(r^2=%0.2f)]\n',...
+            maxcount,results(idx,1),mndist,stdist,b,rsq)
+    % figure;
+    % plot(results(:,1),results(:,2),'--.')
+    % xlabel ('Distance (m)')
+    % ylabel ('Number of channels')
+    % legend(casedesc{1})
+    % title('Count of channels with distance from entrance')
 end
 %%
 function Jd = geonet_diffusion(J,method,N,K,dt,sigma2) 

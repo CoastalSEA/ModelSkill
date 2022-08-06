@@ -21,19 +21,22 @@ function getUserTools(mobj)
 % CoastalSEA (c) Mar 2022
 %--------------------------------------------------------------------------
 %
-    usertools = {'Network Analysis','Rhythmic Forms'};                
-    [selection,ok] = listdlg('Liststring',usertools,...
-                             'PromptString','Select tool:',...  
-                             'ListSize',[180,100],...
-                             'SelectionMode','single');
-    if ok==0, return; end  %user cancelled selection
-    src = usertools{selection};
-    %
-    switch src
-        case 'Network Analysis'
-            getNetworkStats(mobj); 
-        case 'Rhythmic Forms'
-            getRhythmicForm(mobj);
+    ok = 1;
+    while ok>0
+        usertools = {'Network Analysis','Rhythmic Forms'};                
+        [selection,ok] = listdlg('Liststring',usertools,...
+                                 'PromptString','Select tool:',...  
+                                 'ListSize',[180,100],...
+                                 'SelectionMode','single');
+        if ok==0, continue; end  %user cancelled selection
+        src = usertools{selection};
+        %
+        switch src
+            case 'Network Analysis'
+                getNetworkStats(mobj); 
+            case 'Rhythmic Forms'
+                getRhythmicForm(mobj);
+        end
     end
 end
 %%
@@ -42,7 +45,7 @@ function getNetworkStats(mobj)
     gridclasses = {'GD_ImportData'}; %add other classes if needed
     promptxt = {'Select Case to analyse:','Select timestep:'};
     [cobj,~,irow] = selectCaseDatasetRow(mobj.Cases,[],gridclasses,promptxt,1);
-    if isempty(cobj), return; end
+    if isempty(cobj) || isempty(irow), return; end
 
     casedesc = cobj.Data.Form.Description;
     timetxt = cobj.Data.Form.DataTable.Properties.RowNames{irow};
@@ -95,20 +98,23 @@ function [options,casevars] = getNetworkVars(casedesc)
     options = cell2struct(opts,fields);
 
     % assign values to casevars structure for use in channel counting
-    casevars.X_centre = '0';
-    casevars.Y_centre = '0';
+    casevars.X_centre = '85';
+    casevars.Y_centre = '1';
     casevars.min_rad = '12';
     casevars.rad_int = '2';
     casevars.grid_size = '100';
     casevars.HW = '1';
+    casevars.isplot = '0';
     casevars.desc = casedesc;
 
     defaultvals = struct2cell(casevars);
     promptxt = {'X-index for circle centre','Y-index for circle centre',...
                 'Minimum radius','Radius interval',...
-                'Grid size (m)','High water level (mOD)','Case description'};
+                'Grid size (m)','High water level (mOD)',...
+                'Include all plots (0/1)','Case description'};
     answer = inputdlg(promptxt,'Case variables',1,defaultvals);   
     cvar = cellfun(@str2double,answer(1:end-1),'UniformOutput',false);
+    cvar{end} = logical(cvar{end});
     cvar = [cvar;answer(end)];
     fields = fieldnames(casevars);
     casevars = cell2struct(cvar,fields);
@@ -119,7 +125,7 @@ function hf = getRhythmicForm(mobj)
     gridclasses = {'GD_ImportData'}; %add other classes if needed
     promptxt = {'Select Case to analyse:','Select timestep:'};
     [cobj,~,irow] = selectCaseDatasetRow(mobj.Cases,[],gridclasses,promptxt,1);
-    if isempty(cobj), return; end
+    if isempty(cobj) || isempty(irow), return; end
     grid = getGrid(cobj,irow);
     
     casedesc = cobj.Data.Form.Description;

@@ -72,17 +72,11 @@ end
 %%
 function getCasePropsFigure(mobj)
     %create figure for cf_section plot output as used in ChannelForm model
-    hf = figure('Name','Gross properties', ...
-                'Units','normalized', ...
-                'Tag','PlotFig');
-    hf.MenuBar = 'none';   %remove menu bar
-    hf.ToolBar = 'figure'; %allow access to data tips and save tools        
-
     gridclasses = {'GD_ImportData'}; %add other classes if needed
     promptxt = {'Select Case to plot:','Select timestep:'};
-
-   [cobj,~,irec] = selectCaseDatasetRow(mobj.Cases,[],...
-                                                 gridclasses,promptxt,1);
+    [cobj,~,irec] = selectCaseDatasetRow(mobj.Cases,[],...
+        gridclasses,promptxt,1);
+    if isempty(cobj) || isempty(irec), return; end
     %generate table and plot for display on Properties tab
     if ~isfield(cobj.Data,'GrossProps') || isempty(cobj.Data.GrossProps)
         getdialog('No Form Properties available for selected grid')
@@ -90,51 +84,57 @@ function getCasePropsFigure(mobj)
     end
     T = getDSTable(cobj.Data.GrossProps,irec,[]);
     
+    hf = figure('Name','Gross properties', ...
+        'Units','normalized', ...
+        'Tag','PlotFig');
+    hf.MenuBar = 'none';   %remove menu bar
+    hf.ToolBar = 'figure'; %allow access to data tips and save tools
+
     %generate table of gross properties
     uitable('Parent',hf,'Data',T.DataTable{:,:},...
-            'ColumnName',T.VariableNames,...
-            'ColumnWidth',{80},...
-            'RowName',T.DataTable.Properties.RowNames,...
-            'Units','Normalized','Position',[0.05,0.84,0.9,0.14],...
-            'Tag','grossprops');
-    %user popup to select a type of plot 
+        'ColumnName',T.VariableNames,...
+        'ColumnWidth',{80},...
+        'RowName',T.DataTable.Properties.RowNames,...
+        'Units','Normalized','Position',[0.05,0.84,0.9,0.14],...
+        'Tag','grossprops');
+    %user popup to select a type of plot
     popup = findobj(hf,'Style','popup','Tag','PlotList');
     if isempty(popup)
         plotlist = {'Hypsommetry','Cross-sections','Thalweg + Plan width',...
-                    'Along-channel properties','Hydraulic depth',...
-                    'Prism-Area ratio','Elevation-Area histogram',...
-                    'a/h and Vs/Vc','Hydraulics','Transgression'};    
+            'Along-channel properties','Hydraulic depth',...
+            'Prism-Area ratio','Elevation-Area histogram',...
+            'a/h and Vs/Vc','Hydraulics','Transgression'};
         uicontrol('Parent',hf,'Style','text',...
-           'Units','Normalized','Position', [0.05 0.79 0.1 0.04],...
-           'String', 'Select plot:');  
+            'Units','Normalized','Position', [0.05 0.79 0.1 0.04],...
+            'String', 'Select plot:');
         popup = uicontrol('Parent',hf,'Style','popup',...
-           'String',plotlist,'Tag','PlotList',...
-           'Units','Normalized','Position', [0.05 0.74 0.9 0.05],...
-           'Callback', @(src,evdat)gd_property_plots(cobj,irec,src)); %#ok<NASGU>
+            'String',plotlist,'Tag','PlotList',...
+            'Units','Normalized','Position', [0.05 0.74 0.9 0.05],...
+            'Callback', @(src,evdat)gd_property_plots(cobj,irec,src)); %#ok<NASGU>
 
         %Create push button to copy data to clipboard
-        uicontrol('Parent',hf,'Style','pushbutton',...                    
+        uicontrol('Parent',hf,'Style','pushbutton',...
             'String','>Table','UserData',T,'Tag','CopyButton',...
             'TooltipString','Copy grossproperties table to clipboard',...
-            'Units','normalized','Position',[0.75 0.793 0.10 0.044],...                    
-            'Callback',@copydata2clip);  
-        
+            'Units','normalized','Position',[0.75 0.793 0.10 0.044],...
+            'Callback',@copydata2clip);
+
         %create push button to create tab plot as a stand alone figure
-        uicontrol('Parent',hf,'Style','pushbutton',...                    
+        uicontrol('Parent',hf,'Style','pushbutton',...
             'String','>Figure','Tag','FigButton',...
             'TooltipString','Create plot as stand alone figure',...
-            'Units','normalized','Position',[0.86 0.793 0.10 0.044],...                    
-            'Callback',@(src,evdat)gd_property_plots(cobj,irec,src));  
-        
+            'Units','normalized','Position',[0.86 0.793 0.10 0.044],...
+            'Callback',@(src,evdat)gd_property_plots(cobj,irec,src));
+
     else
         %update obj in Callbacks and table in UserData
         popup.Callback = @(src,evdat)gd_property_plots(cobj,irec,src);
-        hb = findobj(hf,'Tag','CopyButton');           
+        hb = findobj(hf,'Tag','CopyButton');
         hb.UserData = T;
         hf = findobj(hf,'Tag','FigButton');
         hf.Callback = @(src,evdat)gd_property_plots(cobj,irec,src);
         gd_property_plots(cobj,irec,popup); %set plot to current popup selection
-    end               
+    end
 end
 %%
 function tabledata = getGrossPropsTable(mobj,istab)
@@ -206,7 +206,9 @@ function getHypsPlot(mobj)
     while select>0
         [cobj,~,irow] = selectCaseDatasetRow(mobj.Cases,[],...
                                                  gridclasses,promptxt,1);
-        if ~isempty(cobj)
+        if isempty(cobj) || isempty(irow)
+            select = 0;
+        else
             wl = cobj.Data.WaterLevels.DataTable(irow,:);
             hyps = cobj.Data.Hypsometry.DataTable(irow,:);  
             zcentre = cobj.Data.Hypsometry.Dimensions.Z;
@@ -228,9 +230,7 @@ function getHypsPlot(mobj)
                 h1.Annotation.LegendInformation.IconDisplayStyle = 'off';  
                 h1 = plot(ax,xlim, wl.zlw(1)*[1 1],':','Color',lightgrey);
                 h1.Annotation.LegendInformation.IconDisplayStyle = 'off';  
-            end
-        else 
-            select = 0;
+            end  
         end
     end
     hold off
@@ -335,7 +335,7 @@ function getThalwegs(mobj)
     promptxt1 = {'Select Case to plot (Cancel to quit):','Select timestep:'};
     [obj,~,irec] = selectCaseDatasetRow(mobj.Cases,[],...
                                                  gridclasses,promptxt1,1);
-    if isempty(obj), return; end  %user cancelled
+    if isempty(obj) || isempty(irec), return; end
     desc = sprintf('%s at %s',obj.Data.Form.Description,char(obj.Data.Form.RowNames(irec)));
     grid = getGrid(obj,irec);   %grid for selected year
     [X,Y] = meshgrid(grid.x,grid.y);
@@ -344,7 +344,7 @@ function getThalwegs(mobj)
     Z = grid.z';
     
     %get maximum water level to define 
-    promptxt2 = {'Maximum water level?','Depth exponent'};
+    promptxt2 = {'Maximum accessible water level?','Depth exponent'};
     defaults = {num2str(max(Z,[],'all')),'2'};
     answer = inputdlg(promptxt2,'Water level',1,defaults);
     if isempty(answer), return; end %user cancelled
@@ -359,7 +359,7 @@ function getThalwegs(mobj)
     promptxt3 = {'Select start of path','Select end of path'};
     gridmasked = grid;        gridmasked.z(~water') = NaN;
     points = gd_selectpoints(gridmasked,2,promptxt3,true);
-    if any(isnan(points.x)), return; end
+    if any(isnan([points(:).x])), return; end
     
     %index of nearest grid point to selected start end end points    
     start = dsearchn(xy,[points.x(1),points.y(1)]); 
@@ -374,6 +374,7 @@ function getThalwegs(mobj)
     %plot base map of initial grid selection and defined mask
     hf = figure('Name','Thalwegs','Units','normalized','Tag','PlotFig');                            
     ax = gd_plotgrid(hf,grid);
+    colormap(ax,'gray');
     lines = {'-','--',':','-.'};
     
     hs = findobj(ax.Children,'Type','surface');
@@ -390,7 +391,7 @@ function getThalwegs(mobj)
     while select>0
         [obj,~,irec] = selectCaseDatasetRow(mobj.Cases,[],...
                                                  gridclasses,promptxt1,1);                                            
-        if isempty(obj)
+        if isempty(obj) || isempty(irec)
             select = 0;   %user cancelled
         else
             desc = sprintf('%s at %s',obj.Data.Form.Description,char(obj.Data.Form.RowNames(irec))); 
