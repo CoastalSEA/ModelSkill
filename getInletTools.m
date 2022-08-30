@@ -362,8 +362,8 @@ function getThalwegs(mobj)
     if any(isnan([points(:).x])), return; end
     
     %index of nearest grid point to selected start end end points    
-    start = dsearchn(xy,[points.x(1),points.y(1)]); 
-    goal = dsearchn(xy,[points.x(2),points.y(2)]);
+    start = dsearchn(xy,[points(1).x,points(1).y]); 
+    goal = dsearchn(xy,[points(2).x,points(2).y]);
     
     %find the shortest path taking account of the cost (depths)
     %Z(Z>maxwl) = 0;
@@ -380,9 +380,10 @@ function getThalwegs(mobj)
     hs = findobj(ax.Children,'Type','surface');
     hs.Annotation.LegendInformation.IconDisplayStyle = 'off';
     hold on
-    hp = plot(ax,points.x,points.y,'ok','MarkerSize',8,'MarkerFaceColor','w','Tag','mypoints');
+    hp = plot(ax,[points(:).x],[points(:).y],'ok','MarkerSize',8,'MarkerFaceColor','w','Tag','mypoints');
     hp.Annotation.LegendInformation.IconDisplayStyle = 'off';  
-    plot(ax,grid.x(idx),grid.y(idy),'r','LineStyle',lines{1},'DisplayName',desc);
+    plot(ax,grid.x(idx),grid.y(idy),'r','LineStyle',lines{1},'LineWidth',1,...
+                                                      'DisplayName',desc);
     hold off
     title('Thalwegs between defined start and end points')
     legend
@@ -411,7 +412,7 @@ function getThalwegs(mobj)
             [idy,idx] = ind2sub(size(Z),thalweg);
             hold on
             plot(ax,grid.x(idx),grid.y(idy),'r','LineStyle',...
-                                lines{rem(count,4)+1},'DisplayName',desc);
+                 lines{rem(count,4)+1},'LineWidth',1,'DisplayName',desc);
             hold off 
             count = count+1;
         end                                       
