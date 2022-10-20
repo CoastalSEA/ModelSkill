@@ -15,8 +15,8 @@ classdef ModelSkill < muiModelUI
 % 
     properties  (Access = protected)
         %implement properties defined as Abstract in muiModelUI
-        vNumber = '2.0'
-        vDate   = 'May 2021'
+        vNumber = '2.1'
+        vDate   = 'Oct 2022'
         modelName = 'ModelSkill'                       
         %Properties defined in muiModelUI that need to be defined in setGui
         % ModelInputs  %classes required by model: used in isValidModel check 
@@ -122,10 +122,10 @@ classdef ModelSkill < muiModelUI
                                   'To curvilinear','From curvilinear',... 
                                   'Display Dimensions','Difference Plot',...
                                   'Plot Sections','Digitise Line',...
-                                  'Export xyz Grid'};                                                                         
-            menu.Setup(5).Callback = repmat({@obj.gridMenuOptions},[1,13]);
+                                  'Export xyz Grid','User Function'};                                                                         
+            menu.Setup(5).Callback = repmat({@obj.gridMenuOptions},[1,14]);
             menu.Setup(5).Separator = [repmat({'off'},[1,6]),...
-                                  {'on','off','on','off','off','on','on'}]; %separator preceeds item           
+                             {'on','off','on','off','off','on','on','on'}]; %separator preceeds item           
             
             %% Run menu ---------------------------------------------------
             menu.Run(1).List = {'Taylor Diagram','Inlet Tools','User Tools','Derive Output'};
