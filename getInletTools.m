@@ -44,14 +44,14 @@ function getInletTools(mobj)
 
         switch src.Text
             case 'Add Properties'
-                GD_ImportData.gridMenuOptions(mobj,src,gridclasses);
+                FGDinterface.formMenuOptions(mobj,src,gridclasses);
             case 'Delete Properties'
-                GD_ImportData.gridMenuOptions(mobj,src,gridclasses);
+                FGDinterface.formMenuOptions(mobj,src,gridclasses);
             case 'Plot Case Properties'
                 getCasePropsFigure(mobj);
                 ok = 0; %quit usertools selection to allow access to figure UI
             case 'Edit Inlet Definition'
-                GD_ImportData.gridMenuOptions(mobj,src,{'GD_ImportData'});
+                FGDinterface.formMenuOptions(mobj,src,{'GD_ImportData'});
             case 'Tabulate Set Properties, f(t)'
                 getGrossPropsTable(mobj,true);
             case 'Plot Set Properties, f(t)'
@@ -215,7 +215,7 @@ function getHypsPlot(mobj)
             zcentre(end,1) = zcentre(end,1)+0.1; %crude offset to highest point so that HW is visible
             zsurf = hyps.SurfaceArea;
             zvol = hyps.Volume;
-            casedesc = cobj.Data.Form.Description;
+            casedesc = cobj.Data.Grid.Description;
             labs = sprintf('%s Area at %s',casedesc,hyps.Properties.RowNames{1});
             plot(ax,zsurf,zcentre,'--','DisplayName',labs);
             labv = sprintf('%s Volume at %s',casedesc,hyps.Properties.RowNames{1});
@@ -336,7 +336,7 @@ function getThalwegs(mobj)
     [obj,~,irec] = selectCaseDatasetRow(mobj.Cases,[],...
                                                  gridclasses,promptxt1,1);
     if isempty(obj) || isempty(irec), return; end
-    desc = sprintf('%s at %s',obj.Data.Form.Description,char(obj.Data.Form.RowNames(irec)));
+    desc = sprintf('%s at %s',obj.Data.Grid.Description,char(obj.Data.Grid.RowNames(irec)));
     grid = getGrid(obj,irec);   %grid for selected year
     [X,Y] = meshgrid(grid.x,grid.y);
     N = numel(X);
@@ -395,7 +395,7 @@ function getThalwegs(mobj)
         if isempty(obj) || isempty(irec)
             select = 0;   %user cancelled
         else
-            desc = sprintf('%s at %s',obj.Data.Form.Description,char(obj.Data.Form.RowNames(irec))); 
+            desc = sprintf('%s at %s',obj.Data.Grid.Description,char(obj.Data.Grid.RowNames(irec))); 
             grid = getGrid(obj,irec);   %grid for selected year
             Z = grid.z';
             %update water mask to reflect new grid

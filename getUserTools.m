@@ -47,11 +47,11 @@ function getNetworkStats(mobj)
     [cobj,~,irow] = selectCaseDatasetRow(mobj.Cases,[],gridclasses,promptxt,1);
     if isempty(cobj) || isempty(irow), return; end
 
-    casedesc = cobj.Data.Form.Description;
-    timetxt = cobj.Data.Form.DataTable.Properties.RowNames{irow};
+    casedesc = cobj.Data.Grid.Description;
+    timetxt = cobj.Data.Grid.DataTable.Properties.RowNames{irow};
     casedesc = sprintf('%s at %s',casedesc,timetxt);
     [options,casevars] = getNetworkVars(casedesc);
-    bathy = squeeze(cobj.Data.Form.Z(irow,:,:));
+    bathy = squeeze(cobj.Data.Grid.Z(irow,:,:));
     network_count(bathy,options,casevars);
 end
 %%
@@ -128,8 +128,8 @@ function hf = getRhythmicForm(mobj)
     if isempty(cobj) || isempty(irow), return; end
     grid = getGrid(cobj,irow);
     
-    casedesc = cobj.Data.Form.Description;
-    timetxt = cobj.Data.Form.DataTable.Properties.RowNames{irow};
+    casedesc = cobj.Data.Grid.Description;
+    timetxt = cobj.Data.Grid.DataTable.Properties.RowNames{irow};
     casedesc = sprintf('%s at %s',casedesc,timetxt);
 
     %find the highest and lowest elevation in the y coordinate to define
