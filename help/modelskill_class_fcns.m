@@ -126,5 +126,5 @@
 % 
 
 %% See Also 
-% The ModelSkill <matlab:open_manual manual>, which provides further details 
+% The ModelSkill <matlab:ms_open_manual manual>, which provides further details 
 % of setup and configuration of the model.

@@ -81,7 +81,7 @@
 %% Run
 % * *Taylor Diagram*: generate a Taylor diagram using grids or timeseries
 % relative to a reference grid or timeseries. Uses settings defined using 
-% _Setup>Run Parameters_ for local skill score (see <matlab:open_manual manual> for details)
+% _Setup>Run Parameters_ for local skill score (see <matlab:ms_open_manual manual> for details)
 %%
 % * *Inlet Tools*:  tools to investigate grids which define inlets, 
 % estuaries or tidal basins, including:
@@ -117,5 +117,5 @@
 % * *Help*: access the online documentation for CoastalTools.
 
 %% See Also
-% The <matlab:open_manual manual> provides further details of setup and 
+% The <matlab:ms_open_manual manual> provides further details of setup and 
 % configuration of the model.

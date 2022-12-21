@@ -1,6 +1,6 @@
 %% ModelSkill Example Folder
 % A selection of data sets can be found in the example folder
-% <matlab:example_folder here>. 
+% <matlab:ms_example_folder here>. 
 %
 % The demo_wind_data.txt text file provides a sample timeseries
 % data set and the demo_format.m is format file the user is prompted for

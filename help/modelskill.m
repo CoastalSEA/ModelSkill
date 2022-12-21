@@ -58,9 +58,9 @@
 % Model runs are listed based on the user descriptions on the Cases tab.
 
 %% Manual
-% The <matlab:open_manual manual> provides further details of setup and 
+% The <matlab:ms_open_manual manual> provides further details of setup and 
 % configuration of the model. The files for the example use case can be found in
-% the example folder <matlab:example_folder here>. 
+% the example folder <matlab:ms_example_folder here>. 
 
 %% References
 % Bosboom J and Reniers A, 2018, The Deceptive Simplicity of the Brier Skill Score, In: Handbook of Coastal and Ocean Engineering, Series, pp. 1639-1663.
