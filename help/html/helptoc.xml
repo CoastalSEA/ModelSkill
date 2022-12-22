@@ -31,6 +31,7 @@
             image="HelpIcon.USER_GUIDE">ModelSkill Developers Guide
             <tocitem target="modelskill_class_fcns.html">ModelSkill classes and functions</tocitem>
             <tocitem target="grid_class_fcns.html">Grid classes and functions</tocitem>
+            <tocitem target="fgdinterface.html">FGDinterface abstract class</tocitem>
             <tocitem target="gdinterface.html">GDinterface abstract class</tocitem>
         </tocitem>
     </tocitem>    

@@ -33,11 +33,12 @@
 % * *GD_GridProps*: class inherits <matlab:doc('muipropertyui') muiPropertyUI> 
 % abstract class, providing an interface to define the extent and intervals
 % of a cartesian grid. 
-% * *GDinterface*: an abstract class to support classes that need additional
-% functionality to handle grids. The class inherits <matlab:doc('muidataset') muiDataSet> 
-% and together they provide an extensive set of methods to handle datasets
+% * *FGDinterface*: an abstract class to support classes that need additional
+% functionality to handle grids. The class inherits *GDinterface*, which
+% in turn inherits <matlab:doc('muidataset') muiDataSet> 
+% to provide an extensive set of methods to handle datasets
 % of various types (eg from models or imported files). 
-% * *GD_ImportData*: class inherits <matlab:doc('gdinterface') GDinterface> abstract class (see above)
+% * *GD_ImportData*: class inherits <matlab:doc('fgdinterface') FGDinterface> abstract class (see above)
 % to load xyz data from a file.
 
 %% Grid Functions
