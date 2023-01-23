@@ -38,7 +38,8 @@ classdef ModelSkill < muiModelUI
             %classes required to run model, format:
             %obj.ModelInputs.<model classname> = {'Param_class1',Param_class2',etc}
             %                                        % << Edit to model and input parameters classnames 
-            obj.ModelInputs.Model_template = {'ParamInput_template'};
+            %obj.ModelInputs.Model_template = {'ParamInput_template'};
+            
             %tabs to include in DataUIs for plotting and statistical analysis
             %select which of the options are needed and delete the rest
             %Plot options: '2D','3D','4D','2DT','3DT','4DT'

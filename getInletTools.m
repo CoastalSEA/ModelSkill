@@ -178,6 +178,7 @@ function getPropsPlot(mobj)
             data = tabledata.DataTable{:,varnum};
             x = tabledata.RowNames;            
             legtext = inputdlg('Legend text','Plot properties',1,{num2str(count)});
+            if isempty(legtext), break; end %user cancels
             plot(ax,x,data,'LineStyle',lines{rem(count,4)+1},...
                                 'LineWidth',1,'DisplayName',legtext{1});
             if count==0
