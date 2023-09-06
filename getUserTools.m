@@ -43,16 +43,42 @@ end
 function getNetworkStats(mobj)
     %select case and call network_count function
     gridclasses = {'GD_ImportData'}; %add other classes if needed
-    promptxt = {'Select Case to analyse:','Select timestep:'};
-    [cobj,~,irow] = selectCaseDatasetRow(mobj.Cases,[],gridclasses,promptxt,1);
+    
+    answer = questdlg('All or single year?','Network','All','Single','All');
+    if strcmp(answer,'All')
+        promptxt = {'Select Case to analyse:'};
+        [caserec,ok] = selectCase(mobj.Cases,promptxt,'single',0,false);
+        if ok<1, return; end
+        cobj = getCase(mobj.Cases,caserec);
+        irow = 1:height(cobj.Data.Grid.DataTable);
+        alltable = table("blank",0,0,0,0,0,0,'VariableNames',{'CaseYear','PeakCount',...
+              'PeakDistance','AvDrainDist','StdDrainDist','SlopeDrainDist','r2DrainDist'});
+    else
+        promptxt = {'Select Case to analyse:','Select timestep:'};
+        [cobj,~,irow] = selectCaseDatasetRow(mobj.Cases,[],gridclasses,promptxt,1);
+    end
     if isempty(cobj) || isempty(irow), return; end
 
     casedesc = cobj.Data.Grid.Description;
-    timetxt = cobj.Data.Grid.DataTable.Properties.RowNames{irow};
-    casedesc = sprintf('%s at %s',casedesc,timetxt);
-    [options,casevars] = getNetworkVars(casedesc);
-    bathy = squeeze(cobj.Data.Grid.Z(irow,:,:));
-    network_count(bathy,options,casevars);
+    [options,casevars] = getNetworkVars(casedesc);  
+    rowtime = cobj.Data.Grid.DataTable.Properties.RowNames;
+
+    for i=1:length(irow)
+        casevars.time = rowtime{irow(i)};             
+        bathy = squeeze(cobj.Data.Grid.Z(irow(i),:,:));
+        outable = network_count(bathy,options,casevars);
+        if length(irow)>1
+            alltable = [alltable;outable]; %#ok<AGROW>
+        end
+    end
+
+    if length(irow)>1
+        %write table to file
+        alltable(1,:) = [];
+        alltable.Properties.RowNames = rowtime;
+        filename = sprintf('%s_network_results.txt',cobj.Data.Grid.Description);
+        writetable(alltable,filename,'FileType','text','WriteRowNames',true);
+    end
 end
 %%
 function [options,casevars] = getNetworkVars(casedesc)

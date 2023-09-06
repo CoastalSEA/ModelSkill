@@ -1,40 +1,66 @@
-function network_count(bathy,options,casevars)
-    %Extract channels from a bathymetry and perform some network analysis
-    %function derived from GeoNet_phd_coundtin_channels_Ian.m provided by
-    %Barend van Maanen (Apr 2020)
-    %
-    %Reference: Sangireddy et al, 2016, GeoNet: An open source software for
-    %the automatic and objective extraction of channel heads, channel 
-    %network, and channel morphology from high resolution topography data, 
-    %Environmental Modeling and Software, 83, 58-73, doi:10.1016/j.envsoft.2016.04.026.
-    %
-    % bathy_0 - an m x n array of elevations of the bathymetry to be analysed
-    % tr - the tidal range (m)
-    % options - struct to define analysis parameters
-    %   method -'lin':  Linear diffusion (constant c=1).
-    %           'pm1': perona-malik, c=exp{-(|grad(J)|/K)^2} [PM90]
-    %           'pm2': perona-malik, c=1/{1+(|grad(J)|/K)^2} [PM90]
-    %           'tukey: ??
-    %           'rmp': complex valued - ramp preserving [GSZ01]
-    %   lambda - edge threshold parameter
-    %   nint - number of iterations
-    %   dt - time increment (0 < dt <= 0.25, default 0.2)
-    %   del - grid spacing (m)
-    %   sigma2 - if present, calculates gradients of diffusion coefficient
-    %          convolved with gaussian of var sigma2 (Catte et al [CLMC92])J
-    % casevars - struct to define the parameters used for channel counting
-    %   X_centre -grid index to centre of circle along x-axis
-    %   Y_centre -grid index to centre of circle along y-axis
-    %   min_rad - minimum radius (in grid intervals)
-    %   rad_int - number of grid intervals used to generate radii
-    %   grid_size - grid dimension (m)
-    %   HW - high water level (m)
-    %   isplot - generates all ouput plots if true
-    %   casedesc - description of selected cas 
-    %
-    %Perform Perona-Malik nonlinear filtering on the original data set 
-    %to obtain the regularized data set
-    %get the diffusion in the grid using GeoNet function diffusiion
+function outable = network_count(bathy,options,casevars)
+%
+%-------function help------------------------------------------------------
+% NAME
+%   network_count.m
+% PURPOSE
+%   Extract channels from a bathymetry and perform some network analysis
+%   function derived from GeoNet_phd_coundtin_channels_Ian.m provided by
+%   Barend van Maanen (Apr 2020)
+% USAGE
+%   outable = network_count(bathy,options,casevars)
+% INPUTS
+%   bathy - elevations for cartesian grid
+%   options - struct to define analysis parameters used in geonet_diffusion (see below)
+%   casevars - struct to define the parameters used for channel counting (see below)
+% OUTPUT
+%   outable - table with fields Case, PeakCount, PeakDistance, AvDrainDist,
+%             StdDrainDist, SlopeDrainDist, r2DrainDist
+% NOTES
+%   requires Matlab Image Processing Toolbox and Statistics and Machine Learning Toolbox
+% SEE ALSO
+%   getUserTools. Called in ModelSkill
+%
+% Author: Ian Townend
+% CoastalSEA (c) Mar 2022, output added Aug 2023 
+%--------------------------------------------------------------------------
+%
+%Reference: Sangireddy et al, 2016, GeoNet: An open source software for
+%the automatic and objective extraction of channel heads, channel 
+%network, and channel morphology from high resolution topography data, 
+%Environmental Modeling and Software, 83, 58-73, doi:10.1016/j.envsoft.2016.04.026.
+%
+% bathy_0 - an m x n array of elevations of the bathymetry to be analysed
+% tr - the tidal range (m)
+% options - struct to define analysis parameters
+%   method -'lin':  Linear diffusion (constant c=1).
+%           'pm1': perona-malik, c=exp{-(|grad(J)|/K)^2} [PM90]
+%           'pm2': perona-malik, c=1/{1+(|grad(J)|/K)^2} [PM90]
+%           'tukey: ??
+%           'rmp': complex valued - ramp preserving [GSZ01]
+%   lambda - edge threshold parameter
+%   nint - number of iterations
+%   dt - time increment (0 < dt <= 0.25, default 0.2)
+%   del - grid spacing (m)
+%   sigma2 - if present, calculates gradients of diffusion coefficient
+%          convolved with gaussian of var sigma2 (Catte et al [CLMC92])J
+% casevars - struct to define the parameters used for channel counting
+%   X_centre -grid index to centre of circle along x-axis
+%   Y_centre -grid index to centre of circle along y-axis
+%   min_rad - minimum radius (in grid intervals)
+%   rad_int - number of grid intervals used to generate radii
+%   grid_size - grid dimension (m)
+%   HW - high water level (m)
+%   isplot - generates all ouput plots if true
+%   casedesc - description of selected cas 
+%
+%Perform Perona-Malik nonlinear filtering on the original data set 
+%to obtain the regularized data set
+%get the diffusion in the grid using GeoNet function diffusiion
+%  
+%geonet_diffusion uses imgaussfilt from Matlab Image Processing Toolbox
+%geonet_qqplot uses norminv from Statistics and Machine Learning Toolbox
+
     v = options;
     K = geonet_diffusion(bathy, v.method, v.nint, v.lambda,...
                          v.dt, v.sigma);
@@ -90,7 +116,7 @@ function network_count(bathy,options,casevars)
         warndlg(sprintf('No results to plot.\nTry changing parameters used for channel counting'));
         return; 
     end
-    plot_network_figures(bathy,bathy_channels,results,casevars.desc);
+    outable = plot_network_figures(bathy,bathy_channels,results,casevars);
 end
 %%
 function channels = get_channels(Cs_bis,above_high_tide,casevars)
@@ -312,7 +338,7 @@ function [cv,mxr] = getXYcentre(bathy_channels,cv)
     end    
 end
 %%
-function plot_network_figures(bathy_0,channels,results,casedesc)
+function outable = plot_network_figures(bathy_0,channels,results,casevars)
     %generate the various plots to illustrate the network extracted and
     %resultant network properties
     figure('Name','Network properties','Units','normalized', ...                
@@ -367,11 +393,17 @@ function plot_network_figures(bathy_0,channels,results,casedesc)
     hold off
     offset = s4.YLim(1)+(s4.YLim(2)-s4.YLim(1))*0.1;
     text(s4,s4.XLim(1)+1,offset,fitxt,'FontSize',8);
+    casedesc = sprintf('%s at %s',casevars.desc,casevars.time);  
     sgtitle(casedesc,'FontSize',12)
     
     %write summary statistics to the Commnad Window
     fprintf('Count = %0.0f, Peak distance = %0.0f, Drainage stats = %0.0f (%0.0f) [%0.3f(r^2=%0.2f)]\n',...
             maxcount,results(idx,1),mndist,stdist,b,rsq)
+    outable = table(string(casedesc),maxcount,results(idx,1),mndist,stdist,b,rsq,...
+               'VariableNames',{'CaseYear','PeakCount','PeakDistance',...
+               'AvDrainDist','StdDrainDist','SlopeDrainDist','r2DrainDist'});
+                    
+
     % figure;
     % plot(results(:,1),results(:,2),'--.')
     % xlabel ('Distance (m)')
@@ -546,7 +578,7 @@ function [xx,yy,qx,qy,mx,my] = geonet_qqplot(x,y,pvec)
     if nargin == 1
        y  =  sort(x);
        [x,~]  = plotpos(y);
-       x  = norminv(x);
+       x  = norminv(x); %requires Statistics and Machine Learning Toolbox.
        xx = x;
        yy = y;
     else
