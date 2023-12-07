@@ -10,8 +10,9 @@ function getUserTools(mobj)
 % INPUTS
 %   mobj - ModelUI instance
 % OUTPUT
-%   Network Analysis: 
-%   Rhythmic Forms: 
+%   Network Analysis: plots of network count, peak distance, etc
+%                     Analysis of multiple cases generates text file of results
+%   Rhythmic Forms: plots of wavelength, amplitude, etc
 % NOTES
 %   uses tools in GDinterface 
 % SEE ALSO
@@ -47,7 +48,7 @@ function getNetworkStats(mobj)
     answer = questdlg('All or single year?','Network','All','Single','All');
     if strcmp(answer,'All')
         promptxt = {'Select Case to analyse:'};
-        [caserec,ok] = selectCase(mobj.Cases,promptxt,'single',0,false);
+        [caserec,ok] = selectCase(mobj.Cases,promptxt,'single',0);
         if ok<1, return; end
         cobj = getCase(mobj.Cases,caserec);
         irow = 1:height(cobj.Data.Grid.DataTable);
