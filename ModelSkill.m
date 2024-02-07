@@ -141,7 +141,8 @@ classdef ModelSkill < muiModelUI
             menu.Analysis(1).Callback = repmat({@obj.analysisMenuOptions},[1,2]);
             
             %% Help menu --------------------------------------------------
-            menu.Help(1).Callback = {@obj.Help}; %make model specific?
+            menu.Help.List = {'Documentation','Manual'};
+            menu.Help.Callback = repmat({@obj.Help},[1,2]);
             
         end
         
@@ -286,10 +287,15 @@ classdef ModelSkill < muiModelUI
         end
 
         %% Help menu ------------------------------------------------------
-        function Help(~,~,~)
-            doc modelskill                             
-        end
-
+        function Help(~,src,~)
+            %menu to access online documentation and manual pdf file
+            switch src.Text
+                case 'Documentation'
+                    doc modelskill   %must be name of html help file  
+                case 'Manual'
+                    ms_open_manual;
+            end
+        end 
         %% Check that toolboxes are installed------------------------------
         function isok = check4muitoolbox(~)
             %check that dstoolbox and muitoolbox have been installed
