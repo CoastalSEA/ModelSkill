@@ -31,7 +31,8 @@ function hyps = ms_userfunction(mobj)
                                                  gridclasses,promptxt,1);
     %get grid and water levels to use comput hypsometry
     grid = getGrid(obj,irec);
-    [wl,histint] = gridWaterLevels(obj,true);                                         
+    wl = getGridWaterLevels(obj,true); 
+    histint = setHypsometryInterval(obj);
     [~,hdst] = gd_basin_hypsometry(grid,wl,histint,0,true);
     %get summary volumes and plot
     hyps = gd_basin_volumes(hdst,true); %true to generate plots

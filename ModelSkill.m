@@ -15,8 +15,8 @@ classdef ModelSkill < muiModelUI
 % 
     properties  (Access = protected)
         %implement properties defined as Abstract in muiModelUI
-        vNumber = '2.1'
-        vDate   = 'Oct 2022'
+        vNumber = '2.11'
+        vDate   = 'May 2024'
         modelName = 'ModelSkill'                       
         %Properties defined in muiModelUI that need to be defined in setGui
         % ModelInputs  %classes required by model: used in isValidModel check 

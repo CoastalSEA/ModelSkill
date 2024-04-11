@@ -186,7 +186,8 @@ function SD = getRhythmicSpacing(obj,grid,zdiff,casedesc)
     %compute the rhythmic form spacing and amplitude
     SD = [];
     %create subgrid selection plot
-    [subdomain,sublimitxt] = getSubDomain(obj,grid);
+%     [subdomain,sublimitxt] = getSubDomain(obj,grid);
+    [subdomain,sublimitxt] = gd_subdomain(grid);
     if isempty(subdomain), return; end
     casedesc = sprintf('Subgrid of %s\nUsing %s',casedesc,sublimitxt);
 
