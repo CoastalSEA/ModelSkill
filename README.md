@@ -1,6 +1,5 @@
 # ModelSkill
-Matlab App for exploring the skill score between timeseries data sets or
-gridded data sets.
+Matlab App for exploring the skill score between timeseries data sets or gridded data sets.
 
 ## Licence
 The code is provided as Open Source code (issued under a BSD 3-clause License).
@@ -22,8 +21,7 @@ Bosboom J, Reniers A J H M and Luijendijk A P, 2014, On the perception of morpho
 Taylor K E, 2001, Summarizing multiple aspects of model performance in a single diagram. Journal of Geophysical Research - Atmospheres, 106 (D7), 7183-7192, 10.1029/2000JD900719.
 
 ## Manual
-The ModelSkill manual in the app/doc folder provides further details of setup and configuration of the model. The files for the example use case can be found in
-the app/example folder. 
+The ModelSkill manual in the app/doc folder provides further details of setup and configuration of the model. The files for the example use case can be found in the app/example folder. 
 
 ## See Also
 The repositories for _dstoolbox_, _muitoolbox_ and _muiAppLIb_.

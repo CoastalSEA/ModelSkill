@@ -3,12 +3,11 @@
 % gridded data sets.
 
 %% Licence
-% The code is provided as Open Source code (issued under a GNU General 
-% Public License).
+% The code is provided as Open Source code (issued under a BSD 3-clause License).
 
 %% Requirements
-% ModelUI is written in Matlab(TM) and requires v2016b, or later. In addition, 
-% ModelUI requires both the <matlab:doc('dstoolbox') dstoolbox> and the 
+% ModelSkill is written in Matlab(TM) and requires v2016b, or later. In addition, 
+% ModelSkill requires both the <matlab:doc('dstoolbox') dstoolbox> and the 
 % <matlab:doc('muitoolbox') muitoolbox>
 
 %% Background
