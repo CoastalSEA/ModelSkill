@@ -6,7 +6,7 @@ function ms_example_folder()
 %app
 appinfo = matlab.apputil.getInstalledAppInfo;
 idx = find(strcmp({appinfo.name},'ModelSkill'));
-fpath = [appinfo(idx(1)).location,[filesep,'ModelSkill',filesep,'example']];
+fpath = [appinfo(idx(1)).location,[filesep,'ModelSkill',filesep,'app',filesep,'example']];
 try
     winopen(fpath)
 catch

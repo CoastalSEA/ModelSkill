@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="269212848" file="D:\Matlab Code\MUImodels\muiApps\ModelSkill\ModelSkill.prj" location="D:\Matlab Code\MUImodels\muiApps\ModelSkill" name="ModelSkill" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="231956945" file="D:\Matlab Code\muiModels\ModelSkill\app\ModelSkill.prj" location="D:\Matlab Code\muiModels\ModelSkill\app" name="ModelSkill" target="target.mlapps" target-name="Package App">
     <param.appname>ModelSkill</param.appname>
     <param.authnamewatermark>Ian Townend</param.authnamewatermark>
     <param.email>i.townend@soton.ac.uk</param.email>
@@ -43,11 +43,11 @@
       <file>${PROJECT_ROOT}\info.xml</file>
       <file>${PROJECT_ROOT}\ModelSkill_logo.jpg</file>
       <file>${PROJECT_ROOT}\msk_functions</file>
-      <file>D:\Matlab Code\MUImodels\muiApps\muiAppGridFcns</file>
+      <file>D:\Matlab Code\muiModels\muiAppLib\muiAppGridFcns</file>
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
-      <file location="D:\Matlab Code\MUImodels\muiApps" name="ModelSkill" optional="false">D:\Matlab Code\MUImodels\muiApps\ModelSkill</file>
+      <file location="D:\Matlab Code\muiModels\ModelSkill" name="app" optional="false">D:\Matlab Code\muiModels\ModelSkill\app</file>
     </build-deliverables>
     <workflow />
     <matlab>
