@@ -67,6 +67,8 @@ function getNetworkStats(mobj)
     for i=1:length(irow)
         casevars.time = rowtime{irow(i)};             
         bathy = squeeze(cobj.Data.Grid.Z(irow(i),:,:));
+        casevars.x = cobj.Data.Grid.Dimensions.X;
+        casevars.y = cobj.Data.Grid.Dimensions.Y;
         outable = network_count(bathy,options,casevars);
         if length(irow)>1
             alltable = [alltable;outable]; %#ok<AGROW>

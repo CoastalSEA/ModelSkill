@@ -112,9 +112,12 @@ function outable = network_count(bathy,options,casevars)
     bathy_channels = get_channels(Cs_bis,above_high_tide,casevars);
     
     results = get_number_channels(bathy_channels,casevars);
-    if isempty(results)
+    outable = [];
+    if isempty(results)        
         warndlg(sprintf('No results to plot.\nTry changing parameters used for channel counting'));
         return; 
+    elseif results==-1
+        return;  %user quit from centre point selection
     end
     outable = plot_network_figures(bathy,bathy_channels,results,casevars);
 end
@@ -181,12 +184,16 @@ function results = get_number_channels(bathy_channels,casevars)
     % CREATING CIRCLES AND COUNTING CHANNELS
     if cv.X_centre==0 || cv.Y_centre==0
        [cv,max_rad] = getXYcentre(bathy_channels,cv);
-       if isempty(max_rad), return; end
+       if isempty(max_rad), results = -1; return; end
     else
         [y_len, x_len] = size(bathy_channels);   
         my_rad = y_len-cv.Y_centre-1;
         mx_rad = min(cv.X_centre,x_len-cv.X_centre)-1;
         max_rad = min(mx_rad,my_rad); 
+        if max_rad<cv.min_rad
+            warndlg('Selected postion too close to edge to accept minimum radius')
+            return
+        end
     end
     
     where_i=0;
@@ -276,7 +283,10 @@ end
 %%
 function [cv,mxr] = getXYcentre(bathy_channels,cv)
     %Allow user to interactively adjust centre point
-    [y_len, x_len] = size(bathy_channels);    
+    % bathy_channels - grid of extracted channels
+    % cv - a struct of casevars with x and y indices of centre point
+    % mxr - maximum radius that can be used from selected point
+    [x_len, y_len] = size(bathy_channels);    
     if cv.X_centre==0
         cv.X_centre = round(x_len/2);
     end
@@ -284,6 +294,9 @@ function [cv,mxr] = getXYcentre(bathy_channels,cv)
     if cv.Y_centre==0
         cv.Y_centre = round(y_len/2);
     end
+    %convert to x, y co-ordinates
+    cv.X_centre = cv.x(cv.X_centre);
+    cv.Y_centre = cv.y(cv.Y_centre);
     
     %plot base figure
     figtitle = sprintf('Centre selection');
@@ -293,8 +306,9 @@ function [cv,mxr] = getXYcentre(bathy_channels,cv)
     position = [0.2,0.4,0.4,0.4];
     [h_plt,h_but] = acceptfigure(figtitle,promptxt,tag,butnames,position);
     ax = axes(h_plt);
-    pcolor(ax,bathy_channels)
-    view([0 -90])
+    contourf(ax,cv.x,cv.y,bathy_channels')
+    %pcolor(ax,bathy_channels)
+    %view([0 -90])
     shading flat
     hold on
     plot(ax,cv.X_centre,cv.Y_centre,'+r','MarkerSize',12)
@@ -306,6 +320,7 @@ function [cv,mxr] = getXYcentre(bathy_channels,cv)
     while ok<1
         waitfor(h_but,'Tag');
         if ~ishandle(h_but) %this handles the user deleting figure window
+            mxr = [];  %initialise in case user closes figure
             ok = 1;         %continue using default subdomain
         elseif strcmp(h_but.Tag,'No')
             %Get user to redfine subgrid
@@ -313,27 +328,33 @@ function [cv,mxr] = getXYcentre(bathy_channels,cv)
             title = 'Define centre';
             defaults = string([cv.X_centre,cv.Y_centre]);
             asub = inputdlg(promptxt,title,1,defaults);
-            newvals = cellfun(@str2double,asub)';
-            cv.X_centre = newvals(1);
-            cv.Y_centre = newvals(2);
-            h_sd = findobj(ax,'Type','line');  %remove existing subdomain rectangle
+            %newvals = cellfun(@str2double,asub)';
+            cv.X_centre = str2double(asub{1});
+            cv.Y_centre = str2double(asub{2});
+            
+            h_sd = findobj(ax,'Type','line');  %remove existing centre point
             delete(h_sd);
             hold on
             plot(ax,cv.X_centre,cv.Y_centre,'+r','MarkerSize',12)
             plot(ax,cv.X_centre,cv.Y_centre,'or','MarkerSize',10)
             hold off
             h_but.Tag = '';
-        else  %user accepted centre point - check not to near boundary
+        else  %user accepted centre point 
+            %convert back to indices
+            cv.X_centre = find(cv.X_centre>=cv.x,1,'last');
+            cv.Y_centre = find(cv.Y_centre>=cv.y,1,'last');
+            %check not too near boundary
             my_rad = y_len-cv.Y_centre-1;
             mx_rad = min(cv.X_centre,x_len-cv.X_centre)-1;
             mxr = min(mx_rad,my_rad); 
             if mxr<cv.min_rad
+                mxr = [];  %reset in case user closes figure
                 warndlg('Selected postion too close to edge to accept minimum radius')
-                mxr = [];
                 h_but.Tag = '';
-            end
-            delete(h_plt.Parent)
-            ok = 1;
+            else
+                delete(h_plt.Parent)
+                ok = 1;
+            end   
         end     
     end    
 end
@@ -345,20 +366,17 @@ function outable = plot_network_figures(bathy_0,channels,results,casevars)
                 'Resize','on','HandleVisibility','on','Tag','PlotFig'); 
 
     s1 = subplot(2,2,1);
-    pcolor(bathy_0)
-    shading flat; 
+    contourf(s1,casevars.x,casevars.y,bathy_0')
+    colormap(s1,cmap_selection(20))
+    shading flat;  
     colorbar; 
-    view([0 -90])
-    set(s1,'clim',[-12 2]); 
-    colormap jet 
     title('Input bathymetry')
 
     s2 = subplot(2,2,2);
-    pcolor(channels)
-    shading flat
-    colorbar
-    view([0 -90])
+    contourf(s2,casevars.x,casevars.y,channels')
+    colormap(s2,'jet')
     set(s2,'clim',[-1 1])
+    shading flat
     title('Extracted channel network')
 
     s3 = subplot(2,2,3);

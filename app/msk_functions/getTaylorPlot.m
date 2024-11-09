@@ -90,7 +90,7 @@ function [grid,casedesc,ok] = grid_selection(mobj,promptxt)
     if ok<1, return; end
 
     obj = getCase(mobj.Cases,caserec);
-    grid = getGrid(obj);
+    grid = getGrid(obj,[],promptxt);
     if isempty(grid)
         ok = 0; %user cancels when selecting grid
     else 
