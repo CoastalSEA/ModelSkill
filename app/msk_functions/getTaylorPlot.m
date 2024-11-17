@@ -95,7 +95,8 @@ function [grid,casedesc,ok] = grid_selection(mobj,promptxt)
         ok = 0; %user cancels when selecting grid
     else 
         %retrieve description from Results Case
-        casedesc = {sprintf('%s at %s',grid.desc,char(grid.t))};
+        dimtxt = var2str(grid.t);
+        casedesc = {sprintf('%s at %s',grid.desc,dimtxt{1})};
     end 
 end
 %%
