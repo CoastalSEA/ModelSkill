@@ -40,7 +40,7 @@ function getInletTools(mobj)
                                      'SelectionMode','single');
         if ok==0, continue; end  %user cancelled selection
         src.Text = usertools{selection};
-        gridclasses = {'GD_ImportData'}; %add other classes if needed
+        gridclasses = {'FGD_ImportData'}; %add other classes if needed
 
         switch src.Text
             case 'Add Properties'
@@ -51,7 +51,7 @@ function getInletTools(mobj)
                 getCasePropsFigure(mobj);
                 ok = 0; %quit usertools selection to allow access to figure UI
             case 'Edit Inlet Definition'
-                FGDinterface.formMenuOptions(mobj,src,{'GD_ImportData'});
+                FGDinterface.formMenuOptions(mobj,src,{'FGD_ImportData'});
             case 'Tabulate Set Properties, f(t)'
                 getGrossPropsTable(mobj,true);
             case 'Plot Set Properties, f(t)'
@@ -72,7 +72,7 @@ end
 %%
 function getCasePropsFigure(mobj)
     %create figure for cf_section plot output as used in ChannelForm model
-    gridclasses = {'GD_ImportData'}; %add other classes if needed
+    gridclasses = {'FGD_ImportData'}; %add other classes if needed
     promptxt = {'Select Case to plot:','Select timestep:'};
     [cobj,~,irec] = selectCaseDatasetRow(mobj.Cases,[],...
         gridclasses,promptxt,1);
@@ -202,7 +202,7 @@ function getHypsPlot(mobj)
     ax = axes(hf);
     hold on
     select = 1; count = 1;
-    gridclasses = {'GD_ImportData'}; %add other classes if needed
+    gridclasses = {'FGD_ImportData'}; %add other classes if needed
     promptxt = {'Select Case to plot:','Select timestep:'};
     while select>0
         [cobj,~,irow] = selectCaseDatasetRow(mobj.Cases,[],...
@@ -332,7 +332,7 @@ end
 function getThalwegs(mobj)
     %plot the thalwegs (deepest point in channel) between user defined
     %start and end points
-    gridclasses = {'GD_ImportData'}; %add other classes if needed
+    gridclasses = {'FGD_ImportData'}; %add other classes if needed
     promptxt1 = {'Select Case to plot (Cancel to quit):','Select timestep:'};
     [obj,~,irec] = selectCaseDatasetRow(mobj.Cases,[],...
                                                  gridclasses,promptxt1,1);

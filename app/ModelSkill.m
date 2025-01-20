@@ -225,8 +225,12 @@ classdef ModelSkill < muiModelUI
         %%
         function gridMenuOptions(obj,src,~)
             %callback functions for grid tools options
-            gridclasses = {'GD_ImportData'}; %add other classes if needed
-            GD_ImportData.gridMenuOptions(obj,src,gridclasses);
+            answer = questdlg('Import as grid or inlet?','Grid','Inlet','Grid');
+            if strcmp(answer,'Grid')
+                GD_ImportData.gridMenuOptions(obj,src,{'GD_ImportData'});
+            else
+                FGD_ImportData.gridMenuOptions(obj,src,{'FGD_ImportData'});
+            end
             DrawMap(obj);
         end
 %%
@@ -256,21 +260,12 @@ classdef ModelSkill < muiModelUI
         %% Run menu -------------------------------------------------------
         function runMenuOptions(obj,src,~)
             %callback functions to run model
-            muicat = obj.Cases;   %handle to muiCatalogue
-            promptxt = 'Select a Case to use:'; 
-            gridclasses = {'GD_ImportData'};
             switch src.Text                   
                 case 'Taylor Diagram'
                     getTaylorPlot(obj); 
                 case 'Inlet Tools'                    
-%                     [cobj,~] = selectCaseObj(muicat,[],gridclasses,promptxt);
-%                     if isempty(cobj), return; end
                     getInletTools(obj);
                 case 'User Tools'
-%                     [cobj,classrec] = selectCaseObj(muicat,[],gridclasses,promptxt);
-%                     if isempty(cobj), return; end
-%                     getUserTools(cobj,classrec,muicat);
-                    
                     getUserTools(obj);
                 case 'Derive Output'
                     obj.mUI.ManipUI = muiManipUI.getManipUI(obj);
