@@ -356,10 +356,11 @@ function getThalwegs(mobj)
     water = true(size(Z));
     water(isnan(Z) | Z>maxwl) = false;
  
-    %cline = gd_selectpoints(grid,true);     
+    %cline = gd_digitisepoints(grid,'Thalweg input',0,0);   %isxyz and isdel both false
     promptxt3 = {'Select start of path','Select end of path'};
-    gridmasked = grid;        gridmasked.z(~water') = NaN;
-    points = gd_selectpoints(gridmasked,2,promptxt3,true);
+    gridmasked = grid;        
+    gridmasked.z(~water') = NaN;
+    points = gd_selectpoints(gridmasked,'Thalweg input',promptxt3,2,true);
     if any(isnan([points(:).x])), return; end
     
     %index of nearest grid point to selected start end end points    

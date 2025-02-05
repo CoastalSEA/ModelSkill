@@ -193,7 +193,7 @@ function SD = getRhythmicSpacing(~,grid,zdiff,casedesc)
     casedesc = sprintf('Subgrid of %s\nUsing %s',casedesc,sublimitxt);
 
     grid.z = zdiff';
-    [subgrid,SD.x,SD.y] = getsubgrid(grid,subdomain);
+    [subgrid,SD.x,SD.y] = gd_subgrid(grid,subdomain);
     subz = subgrid.z';
     
     %compute stats for each row over the ysub domain
