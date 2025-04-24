@@ -26,7 +26,7 @@ function data = readmatfile(filename,gridints)
     dataname = fieldnames(S);
     xint = str2double(gridints{1});
     yint = str2double(gridints{2});
-    if length(dataname)==1
+    if isscalar(dataname)
         indata = S.(dataname{1});
         [m,n] = size(indata);
         [X,Y] = meshgrid(0:xint:(m-1)*xint,0:yint:(n-1)*yint);
