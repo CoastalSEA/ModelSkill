@@ -176,7 +176,7 @@ classdef ModelSkill < muiModelUI
             % positions:  top left [0.95,0.48];    top right [0.95,0.97]
             %         bottom left [0.45, 0.48]; bottom rigth [0.45,0.97]
             props = {...
-                'MS_RunParams','Inputs',[0.40,0.77],{220,180},'Skill model parameters:'; ...
+                'muiSkill_RunParams','Inputs',[0.40,0.77],{220,180},'Skill model parameters:'; ...
                 'GD_GridProps','Inputs',[0.90,0.50],{160,90}, 'Grid parameters:'};
         end    
  %%
@@ -214,7 +214,7 @@ classdef ModelSkill < muiModelUI
                     tabsrc = findobj(obj.mUI.Tabs,'Tag','Inputs');
                     InputTabSummary(obj,tabsrc);
                 case 'Run Parameters'                         
-                    MS_RunParams.setInput(obj);  
+                    muiSkill_RunParams.setInput(obj);  
                     %update tab display with input data
                     tabsrc = findobj(obj.mUI.Tabs,'Tag','Inputs');
                     InputTabSummary(obj,tabsrc);

@@ -51,7 +51,7 @@ function get_Grid_TaylorPlot(mobj)
     [grid0,metatxt(1),ok] = grid_selection(mobj,promptxt);
     if ok<1, return; end
     
-    %extract Skill parameters from MS_RunParameters class
+    %extract Skill parameters from muiSkill_RunParameters class
     [skill,ok] = getSkillParameters(mobj,grid0.x,grid0.y);
     if ok<1, return; end
 
@@ -101,10 +101,10 @@ function [grid,casedesc,ok] = grid_selection(mobj,promptxt)
 end
 %%
 function [skill,ok] = getSkillParameters(mobj,x,y)
-    %extract Skill parameters from MS_RunParameters class
+    %extract Skill parameters from muiSkill_RunParameters class
     ok = 1; skill = [];    
-    if isfield(mobj.Inputs,'MS_RunParams')
-        runparams = mobj.Inputs.MS_RunParams;
+    if isfield(mobj.Inputs,'muiSkill_RunParams')
+        runparams = mobj.Inputs.muiSkill_RunParams;
         skill.Ro = runparams.maxcorr;
         skill.n  = runparams.skillexponent;
         skill.Inc = true;                    %flag to include skill score
@@ -141,7 +141,7 @@ function get_TS_TaylorPlot(mobj)
     [z0,metatxt(1),ok] = ts_selection(mobj,promptxt);
     if ok<1, return; end
     
-    %extract Skill parameters from MS_RunParameters class
+    %extract Skill parameters from muiSkill_RunParameters class
     [skill,ok] = getSkillParameters(mobj,z0,[]);
     if ok<1, return; end
 

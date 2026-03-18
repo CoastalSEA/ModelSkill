@@ -1,12 +1,17 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>ModelSkill Classes and Functions</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-12-22"><meta name="DC.source" content="modelskill_class_fcns.m"><style type="text/css">
+      -->
+<title>ModelSkill Classes and Functions</title>
+<meta name="generator" content="MATLAB 24.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-03-18">
+<meta name="DC.source" content="modelskill_class_fcns.m">
+<style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,21 +72,168 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>ModelSkill Classes and Functions</h1><!--introduction--><p>The ModelSkill App is built using the <a href="matlab:doc('muitoolbox')">muitoolbox</a> and a number of model specific classes.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">ModelSkill classes</a></li><li><a href="#2">ModelSkill functions</a></li><li><a href="#4">Grid Classes</a></li><li><a href="#6">Grid Functions</a></li><li><a href="#9">See Also</a></li></ul></div><h2 id="1">ModelSkill classes</h2><div><ul><li><b>ModelSkill</b>: defines the behaviour of the main UI.</li><li><b>MS_RunParams</b>: UI to set pareameters used for the skill score calculation.</li></ul></div><h2 id="2">ModelSkill functions</h2><p>Functions to analyse univariate timeseries, or gridded data, using a Taylor diagram, skill score and network analysis, along with toold to analyse the gross properties (volume, area, width, etc) of inlets or channels</p><div><ul><li><b>example/demo_format</b> &#8211; used to set up import format and metadata description of timeseries variables.</li><li><b>getTaylorPlot</b> - calls the taylor_plot function with either gridded or timeseries data.</li><li><b>getInletTools</b> - tools to extract and plot morphological properties of inlets and channels.</li><li><b>getUserTools</b> - user functions to do additional analysis on data loaded in ModelSkill.</li><li><b>ms_userfunction</b> - user function called from Inlet Tools menu. Example code compares different ways of computing basin tidal prism.</li><li><b>network_count</b> - extract channels from a bathymetry and perform some network analysis.</li></ul></div><h2 id="4">Grid Classes</h2><p>Classes used to manipulate cartesian grids can be found in the <i>muiAppGridFcns</i> folder and include the following:</p><div><ul><li><b>GD_GridProps</b>: class inherits <a href="matlab:doc('muipropertyui')">muiPropertyUI</a> abstract class, providing an interface to define the extent and intervals of a cartesian grid.</li><li><b>FGDinterface</b>: an abstract class to support classes that need additional functionality to handle grids. The class inherits <b>GDinterface</b>, which in turn inherits <a href="matlab:doc('muidataset')">muiDataSet</a> to provide an extensive set of methods to handle datasets of various types (eg from models or imported files).</li><li><b>GD_ImportData</b>: class inherits <a href="matlab:doc('fgdinterface')">FGDinterface</a> abstract class (see above) to load xyz data from a file.</li></ul></div><h2 id="6">Grid Functions</h2><p>Functions used to manipulate cartesian grids can be found in the <i>muiAppGridFcns</i> folder and include the following:</p><div><ul><li><b>gd_ax_dir</b> - check direction of grid axes and reverse if descending, OR find grid orientation using ishead and direction of x-axis, OR check a grid axis direction by prompting user.</li><li><b>gd_basin_hypsometry</b> - compute area and volume hypsometry from gridded elevation data.</li><li><b>gd_basin_indices</b> - get the indices of the grid x-axis that fall within the basin or channel, when the mouth is offset from the grid origin. (NB: assumes basin/channel is aligned iwth the x-axis). Also returns the index of mouth position on the x-axis.</li><li><b>gd_basin_properties</b> - use the basin hypsometry from gd_basin_hypsometry to compute several along-channel/x-axis morphological properties.</li><li><b>gd_colormap</b> - check if Mapping toolbox is installed to use land/sea colormap, or call <i>cmap_selection</i> (see <a href="matlab:doc('psfunctions')">Plotting and statistical functions</a> in the <a href="matlab:doc('muitoolbox')">muitoolbox</a>) if not available.</li><li><b>gd_digitisepoints</b> - creates figure to interactively digitise points on a grid and add elevations if required.</li><li><b>gd_dimensions</b> - get the grid dimsnions for a grid struct (as used in GDinterface).</li><li><b>gd_grid_line</b> - create a grid from scattered data points input as xyz tuples.</li><li><b>gd_gross_properties</b> - compute the gross properties of a gridded bathymetry.</li><li><b>gd_plan_form</b> - compute planform variation along the x-axis at specified planar levels.</li><li><b>gd_plotgrid</b> - create pcolor plot of gridded surface.</li><li><b>gd_plotsections</b> - display grid and allow user to interactively define start and end points of a section line to be plotted in a figure.</li><li><b>gd_property_plots</b> - plots displayed on Proprety tab or stand-alone figure in Apps that use GDinterface, such as ChannelForm and ModelSkill.</li><li><b>gd_section_properties</b> - compute the width, cross-sectional area and prism along channel.</li><li><b>gd_selectpoints</b> - accept figure to interactively select one or more points on a grid.</li><li><b>gd_setpoint</b> - interactively select a point on a plot and return the point coordinates. Includes an option to enter an additional value at the selected point (e.g. for elevation).</li><li><b>gd_startendpoints</b> - accept figure to interactively select start and end points on a grid.</li><li><b>gd_subdomain</b> - accept figure to interactively select a subdomain of a grid.</li><li><b>gd_property_plots</b> - plots displayed on Proprety tab in ChannelForm model and on a figure in ModelSkill.</li><li><b>gd_xy2sn</b> - map grid from cartesian to curvilinear coordinates with option to return the elevations on the source cartesian grid, or as a curvilinear grid.</li><li><b>gd_sn2xy</b> - map grid from curvilinear to cartesian coordinates.</li><li><b>getconvergencelength</b> - least squares fit using fminsearch to % find the convergence length of a channel from a distance-width xy data set.</li><li><b>getsubgrid</b> - extract a subdomain from a grid and return the extracted grid and the source grid indices of the bounding rectangle.</li><li><b>a_star</b> - implements the A* search algorithm to find the shortest path given constraints (inaccessible cells) and a cost function (e.g. water depths). Author: Alex Ranaldi, 2022, <a href="https://github.com/alexranaldi/A_STAR">https://github.com/alexranaldi/A_STAR</a></li><li><b>InterX</b> - intersection of two curves. MATLAB Central File Exchange, Author: NS, 2010, <a href="https://www.mathworks.com/matlabcentral/fileexchange/22441-curve-intersections">https://www.mathworks.com/matlabcentral/fileexchange/22441-curve-intersections</a>.</li><li><b>xy2sn</b> - Bart Vermeulen,2022, Cartesian to Curvilinear   coordinate forward and backward transformation.   <a href="https://www.mathworks.com/matlabcentral/fileexchange/55039-cartesian-to-curvilinear-coordinate-forward-and-backward-transformation">https://www.mathworks.com/matlabcentral/fileexchange/55039-cartesian-to-curvilinear-coordinate-forward-and-backward-transformation</a></li><li><b>sn2xy</b> - as above.</li></ul></div><p>Further details can be found in <a href="matlab:doc('grid_class_fcns')">Grid classes and functions</a></p><h2 id="9">See Also</h2><p>The ModelSkill <a href="matlab:ms_open_manual">manual</a>, which provides further details of setup and configuration of the model.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>ModelSkill Classes and Functions</h1>
+<!--introduction-->
+<p>The ModelSkill App is built using the <a href="matlab:doc('muitoolbox')">muitoolbox</a> and a number of model specific classes.</p>
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#3">ModelSkill classes</a>
+</li>
+<li>
+<a href="#4">ModelSkill functions</a>
+</li>
+<li>
+<a href="#6">Grid Classes</a>
+</li>
+<li>
+<a href="#8">Grid Functions</a>
+</li>
+<li>
+<a href="#11">See Also</a>
+</li>
+</ul>
+</div>
+<p>The muitoolbox includes the class:</p>
+<div>
+<ul>
+<li>
+<b>muiSkill_RunParams</b>: UI to set parameters used for the skill score calculation.</li>
+</ul>
+</div>
+<h2 id="3">ModelSkill classes</h2>
+<div>
+<ul>
+<li>
+<b>ModelSkill</b>: defines the behaviour of the main UI.</li>
+</ul>
+</div>
+<h2 id="4">ModelSkill functions</h2>
+<p>Functions to analyse univariate timeseries, or gridded data, using a Taylor diagram, skill score and network analysis, along with toold to analyse the gross properties (volume, area, width, etc) of inlets or channels.</p>
+<div>
+<ul>
+<li>
+<b>example/demo_format</b> &ndash; used to set up import format and metadata description of timeseries variables.</li>
+<li>
+<b>getTaylorPlot</b> - calls the taylor_plot function with either gridded or timeseries data.</li>
+<li>
+<b>getInletTools</b> - tools to extract and plot morphological properties of inlets and channels.</li>
+<li>
+<b>getUserTools</b> - user functions to do additional analysis on data loaded in ModelSkill.</li>
+<li>
+<b>ms_userfunction</b> - user function called from Inlet Tools menu. Example code compares different ways of computing basin tidal prism.</li>
+<li>
+<b>network_count</b> - extract channels from a bathymetry and perform some network analysis.</li>
+</ul>
+</div>
+<h2 id="6">Grid Classes</h2>
+<p>Classes used to manipulate cartesian grids can be found in the <i>muiAppGridFcns</i> folder and include the following:</p>
+<div>
+<ul>
+<li>
+<b>GD_GridProps</b>: class inherits <a href="matlab:doc('muipropertyui')">muiPropertyUI</a> abstract class, providing an interface to define the extent and intervals of a cartesian grid.</li>
+<li>
+<b>FGDinterface</b>: an abstract class to support classes that need additional functionality to handle grids. The class inherits <b>GDinterface</b>, which in turn inherits <a href="matlab:doc('muidataset')">muiDataSet</a> to provide an extensive set of methods to handle datasets of various types (eg from models or imported files).</li>
+<li>
+<b>GD_ImportData</b>: class inherits <a href="matlab:doc('fgdinterface')">FGDinterface</a> abstract class (see above) to load xyz data from a file.</li>
+</ul>
+</div>
+<h2 id="8">Grid Functions</h2>
+<p>Functions used to manipulate cartesian grids can be found in the <i>muiAppGridFcns</i> folder and include the following:</p>
+<div>
+<ul>
+<li>
+<b>gd_ax_dir</b> - check direction of grid axes and reverse if descending, OR find grid orientation using ishead and direction of x-axis, OR check a grid axis direction by prompting user.</li>
+<li>
+<b>gd_basin_hypsometry</b> - compute area and volume hypsometry from gridded elevation data.</li>
+<li>
+<b>gd_basin_indices</b> - get the indices of the grid x-axis that fall within the basin or channel, when the mouth is offset from the grid origin. (NB: assumes basin/channel is aligned iwth the x-axis). Also returns the index of mouth position on the x-axis.</li>
+<li>
+<b>gd_basin_properties</b> - use the basin hypsometry from gd_basin_hypsometry to compute several along-channel/x-axis morphological properties.</li>
+<li>
+<b>gd_colormap</b> - check if Mapping toolbox is installed to use land/sea colormap, or call <i>cmap_selection</i> (see <a href="matlab:doc('psfunctions')">Plotting and statistical functions</a> in the <a href="matlab:doc('muitoolbox')">muitoolbox</a>) if not available.</li>
+<li>
+<b>gd_digitisepoints</b> - creates figure to interactively digitise points on a grid and add elevations if required.</li>
+<li>
+<b>gd_dimensions</b> - get the grid dimsnions for a grid struct (as used in GDinterface).</li>
+<li>
+<b>gd_grid_line</b> - create a grid from scattered data points input as xyz tuples.</li>
+<li>
+<b>gd_gross_properties</b> - compute the gross properties of a gridded bathymetry.</li>
+<li>
+<b>gd_plan_form</b> - compute planform variation along the x-axis at specified planar levels.</li>
+<li>
+<b>gd_plotgrid</b> - create pcolor plot of gridded surface.</li>
+<li>
+<b>gd_plotsections</b> - display grid and allow user to interactively define start and end points of a section line to be plotted in a figure.</li>
+<li>
+<b>gd_property_plots</b> - plots displayed on Proprety tab or stand-alone figure in Apps that use GDinterface, such as ChannelForm and ModelSkill.</li>
+<li>
+<b>gd_section_properties</b> - compute the width, cross-sectional area and prism along channel.</li>
+<li>
+<b>gd_selectpoints</b> - accept figure to interactively select one or more points on a grid.</li>
+<li>
+<b>gd_setpoint</b> - interactively select a point on a plot and return the point coordinates. Includes an option to enter an additional value at the selected point (e.g. for elevation).</li>
+<li>
+<b>gd_startendpoints</b> - accept figure to interactively select start and end points on a grid.</li>
+<li>
+<b>gd_subdomain</b> - accept figure to interactively select a subdomain of a grid.</li>
+<li>
+<b>gd_property_plots</b> - plots displayed on Proprety tab in ChannelForm model and on a figure in ModelSkill.</li>
+<li>
+<b>gd_xy2sn</b> - map grid from cartesian to curvilinear coordinates with option to return the elevations on the source cartesian grid, or as a curvilinear grid.</li>
+<li>
+<b>gd_sn2xy</b> - map grid from curvilinear to cartesian coordinates.</li>
+<li>
+<b>getconvergencelength</b> - least squares fit using fminsearch to % find the convergence length of a channel from a distance-width xy data set.</li>
+<li>
+<b>getsubgrid</b> - extract a subdomain from a grid and return the extracted grid and the source grid indices of the bounding rectangle.</li>
+<li>
+<b>a_star</b> - implements the A* search algorithm to find the shortest path given constraints (inaccessible cells) and a cost function (e.g. water depths). Author: Alex Ranaldi, 2022, <a href="https://github.com/alexranaldi/A_STAR">https://github.com/alexranaldi/A_STAR</a>
+</li>
+<li>
+<b>InterX</b> - intersection of two curves. MATLAB Central File Exchange, Author: NS, 2010, <a href="https://www.mathworks.com/matlabcentral/fileexchange/22441-curve-intersections">https://www.mathworks.com/matlabcentral/fileexchange/22441-curve-intersections</a>.</li>
+<li>
+<b>xy2sn</b> - Bart Vermeulen,2022, Cartesian to Curvilinear coordinate forward and backward transformation. <a href="https://www.mathworks.com/matlabcentral/fileexchange/55039-cartesian-to-curvilinear-coordinate-forward-and-backward-transformation">https://www.mathworks.com/matlabcentral/fileexchange/55039-cartesian-to-curvilinear-coordinate-forward-and-backward-transformation</a>
+</li>
+<li>
+<b>sn2xy</b> - as above.</li>
+</ul>
+</div>
+<p>Further details can be found in <a href="matlab:doc('grid_class_fcns')">Grid classes and functions</a>
+</p>
+<h2 id="11">See Also</h2>
+<p>The ModelSkill <a href="matlab:ms_open_manual">manual</a>, which provides further details of setup and configuration of the model.</p>
+<p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2024b</a>
+<br>
+</p>
+</div>
+<!--
 ##### SOURCE BEGIN #####
 %% ModelSkill Classes and Functions
 % The ModelSkill App is built using the <matlab:doc('muitoolbox') muitoolbox>
-% and a number of model specific classes.
+% and a number of model specific classes. 
+%%
+% The muitoolbox includes the class:
+%%
+% * *muiSkill_RunParams*: UI to set parameters used for the skill score
+% calculation.
 
 %% ModelSkill classes
 % * *ModelSkill*: defines the behaviour of the main UI.
-% * *MS_RunParams*: UI to set pareameters used for the skill score
-% calculation.
 
 %% ModelSkill functions
 % Functions to analyse univariate timeseries, or gridded data, using a Taylor diagram, 
 % skill score and network analysis, along with toold to analyse the gross 
-% properties (volume, area, width, etc) of inlets or channels 
+% properties (volume, area, width, etc) of inlets or channels.
 %%
 % * *example/demo_format*
 % – used to set up import format and metadata description of timeseries variables. 
@@ -202,4 +354,6 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 % of setup and configuration of the model.
 
 ##### SOURCE END #####
---></body></html>
+-->
+</body>
+</html>

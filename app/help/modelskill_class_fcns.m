@@ -1,16 +1,19 @@
 %% ModelSkill Classes and Functions
 % The ModelSkill App is built using the <matlab:doc('muitoolbox') muitoolbox>
-% and a number of model specific classes.
+% and a number of model specific classes. 
+%%
+% The muitoolbox includes the class:
+%%
+% * *muiSkill_RunParams*: UI to set parameters used for the skill score
+% calculation.
 
 %% ModelSkill classes
 % * *ModelSkill*: defines the behaviour of the main UI.
-% * *MS_RunParams*: UI to set pareameters used for the skill score
-% calculation.
 
 %% ModelSkill functions
 % Functions to analyse univariate timeseries, or gridded data, using a Taylor diagram, 
 % skill score and network analysis, along with toold to analyse the gross 
-% properties (volume, area, width, etc) of inlets or channels 
+% properties (volume, area, width, etc) of inlets or channels.
 %%
 % * *example/demo_format*
 % – used to set up import format and metadata description of timeseries variables. 
